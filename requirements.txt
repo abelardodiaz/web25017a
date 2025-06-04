@@ -1,0 +1,13 @@
+# requirements.txt
+Flask==3.0.0
+Flask-SQLAlchemy==3.1.1
+Flask-Migrate==4.0.5
+Flask-WTF==1.2.1
+Flask-Login==0.6.3
+WTForms==3.1.2
+email_validator>=2.0.0
+Flask-Bootstrap==3.3.7.1
+bleach==6.1.0
+cryptography==42.0.5
+pymysql==1.1.0
+mysqlclient==2.2.1

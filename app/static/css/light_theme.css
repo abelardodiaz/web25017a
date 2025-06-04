@@ -1,0 +1,9 @@
+/* app/static/css/light_theme.css */
+[data-theme="light"]
+:root {
+    --bg-primary: #ffffff;
+    --text-primary: #1a1a1a;
+    --accent-color: #0d6efd;
+    --hover-bg: #f8f9fa;
+    --border-color: #dee2e6;
+}

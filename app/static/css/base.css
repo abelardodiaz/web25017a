@@ -1,0 +1,146 @@
+/* app/static/css/base.css */
+:root[data-theme="light"] {
+    --bg-primary: #fff;
+    --text-primary: #1a1a1a;
+    --accent-color: #0d6efd;
+    --hover-bg: #f8f9fa;
+    --border-color: #dee2e6;
+    --bg-secondary: #ddd;
+}
+
+:root[data-theme="dark"]{
+    --bg-primary: #1a1a1a;
+    --text-primary: #fff;
+    --accent-color: #0d6efd;
+    --hover-bg: #2d2d2d;
+    --border-color: #444444;
+    --bg-secondary: #333;
+}
+
+.card {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.form-control,
+.form-select {
+    background-color: var(--bg-primary); 
+    color: var(--text-primary); 
+    border: 1px solid var(--border-color); 
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--bg-primary); 
+    color: var(--text-primary); 
+    border-color: var(--accent-color); 
+    box-shadow: 0 0 0 0.2rem rgba(var(--accent-color), 0.25); 
+}
+
+.form-control::placeholder {
+    color: var(--text-primary);
+    opacity: 0.7; 
+}
+
+.form-control:disabled,
+.form-select:disabled {
+    background-color: var(--hover-bg); 
+    color: var(--text-primary);
+    opacity: 0.5; 
+}
+
+/* Estilos base para la tabla */
+.table {
+    background-color: var(--bg-primary); /* Fondo principal según tema */
+    color: var(--text-primary); /* Color del texto según tema */
+}
+
+/* Estilos para las celdas del cuerpo */
+.table tbody tr {
+    background-color: var(--bg-primary); /* Fondo del cuerpo */
+    color: var(--text-primary); /* Color del texto */
+}
+
+/* Efecto hover para filas */
+.table-hover tbody tr:hover {
+    background-color: var(--hover-bg); /* Fondo al pasar el ratón */
+    color: var(--text-primary);
+}
+
+/* Estilos para el encabezado */
+.table thead th {
+    background-color: var(--hover-bg); /* Fondo más oscuro o claro según tema */
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--border-color);
+}
+
+/* Personalización para .table-dark en el encabezado */
+.table-dark thead th {
+    background-color: #343a40; /* Gris oscuro predeterminado para contraste */
+    color: #ffffff; /* Texto blanco para visibilidad */
+}
+
+/* Ajustar bordes de la tabla */
+.table th,
+.table td {
+    border-color: var(--border-color); /* Bordes según tema */
+    background-color: var(--bg-secondary); /* Fondo según tema */
+    color: var(--text-primary); /* Color del texto según tema */
+}
+
+
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.navbar {
+    background-color: var(--bg-primary) !important;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Asegura que los enlaces del navbar y la marca usen el color del tema */
+.nav-link,
+.navbar-brand {
+    color: var(--text-primary);
+}
+
+/* Cambia el color al pasar el ratón o enfocar, para consistencia */
+.nav-link:hover,
+.nav-link:focus {
+    color: var(--accent-color);
+}
+
+
+.btn-outline-light {
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.dropdown-menu {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+}
+
+/* Estilos específicos para autenticación */
+.dropdown-menu {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+}
+
+.dropdown-item {
+    color: var(--text-primary);
+}
+
+.dropdown-item:hover {
+    background-color: var(--hover-bg);
+    color: var(--accent-color);
+}
+
+
+.footer {
+    background-color: var(--bg-secondary); 
+
+}

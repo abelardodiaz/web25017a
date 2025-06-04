@@ -1,0 +1,42 @@
+# Archivos de configuración sensibles
+config.py
+.env
+secrets.json
+
+# Archivos y carpetas generados por sistemas operativos
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Archivos de logs
+*.log
+logs/
+error.log
+
+# Carpetas de dependencias (ejemplo: Python, Node.js)
+web25011/
+privada/
+node_modules/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Archivos temporales
+*.tmp
+*.bak
+*.swp
+
+# Carpetas de salida o builds
+dist/
+build/
+out/
+
+# Archivos de editores de código
+.vscode/
+.idea/
+*.sublime-workspace
+
+# Otros archivos específicos del proyecto
+PREPARATIVOS.sh

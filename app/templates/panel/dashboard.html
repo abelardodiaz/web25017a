@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Estado del Sistema</h5>
+            <p class="card-text">
+                Base de datos: <span class="badge bg-success">Operativa</span>
+            </p>
+        </div>
+    </div>
+    <br>
+    <!-- Tarjeta de Gestión de Usuarios -->
+    <div class="card mb-4 shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Gestión de Usuarios</h4>
+        </div>
+        
+        <div class="card-body">
+            <!-- Formulario Nuevo Usuario -->
+            <form method="POST" action="{{ url_for('panel.add_user') }}" class="mb-4">
+                {{ form.hidden_tag() }}  <!-- Incluye el token CSRF -->
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            {{ form.username.label(class="form-label small mb-1") }}
+                            {{ form.username(class="form-control" + (" is-invalid" if form.username.errors else ""), placeholder="Ej: usuario123") }}
+                            {% for error in form.username.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            {{ form.role.label(class="form-label small mb-1") }}
+                            {{ form.role(class="form-select" + (" is-invalid" if form.role.errors else "")) }}
+                            {% for error in form.role.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            {{ form.password.label(class="form-label small mb-1") }}
+                            {{ form.password(class="form-control" + (" is-invalid" if form.password.errors else ""), placeholder="Mínimo 8 caracteres") }}
+                            {% for error in form.password.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            {{ form.email.label(class="form-label small mb-1") }}
+                            {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else ""), placeholder="opcional@ejemplo.com") }}
+                            {% for error in form.email.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                        <button type="submit" class="btn btn-success w-100 h-100">
+                            <i class="bi bi-person-add me-1"></i> Add
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Listado de Usuarios -->
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Rol</th>
+                            <th>Email</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user.username }} {% if user.master %}<span class="badge bg-primary">Master</span>{% endif %}</td>
+                            <td><span class="badge bg-secondary">{{ user.role.value }}</span></td>
+                            <td>{{ user.email or '-' }}</td>
+                            <td>
+                                {% if not user.master %}
+                                <form method="POST" action="{{ url_for('panel.delete_user', user_id=user.id) }}">
+                                    {{ delete_form.hidden_tag() }}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger delete-btn">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tarjeta de Administración del Sistema -->
+    <div class="card border-danger shadow">
+        <div class="card-header bg-danger text-white">
+            <h4 class="mb-0">Administración del Sistema</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('panel.reset_db') }}" class="reset-db-form">
+                {{ reset_form.hidden_tag() }}  <!-- Incluye el token CSRF -->
+                <div class="alert alert-warning">
+                    <strong>¡Precaución!</strong> Esta acción eliminará todos los datos.
+                </div>
+                <button type="submit" class="btn btn-danger">Reset Database</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Script para confirmaciones -->
+<script>
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            if (!confirm('¿Estás seguro de eliminar este usuario?')) {
+                e.preventDefault();
+            }
+        });
+    });
+
+    document.querySelector('.reset-db-form').addEventListener('submit', (e) => {
+        if (!confirm('¿Estás seguro de resetear la base de datos? Esto eliminará todos los datos.')) {
+            e.preventDefault();
+        }
+    });
+</script>
+{% endblock %}

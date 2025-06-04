@@ -1,0 +1,51 @@
+<!-- app/templates/modals/redirect.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="modal fade show d-block" tabindex="-1" role="dialog" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Redireccionando</h5>
+            </div>
+            <div class="modal-body">
+                <div class="text-center">
+                    <div class="spinner-border text-primary mb-3" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                    <p id="countdown-message" class="mb-0">
+                        {% with messages = get_flashed_messages(category_filter=["modal_data"]) %}
+                            {{ messages[0].message if messages else 'Redireccionando...' }}
+                        {% endwith %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const modalData = JSON.parse('{{ modal_data|tojson|safe }}');  // Usar variable directa
+        
+        let seconds = modalData.delay || 3;
+        const countdownElement = document.getElementById('countdown-message');
+        let countdownInterval;
+    
+        function updateCountdown() {
+            countdownElement.textContent = `${modalData.message} en ${seconds} segundos...`;
+            
+            if(seconds <= 0) {
+                clearInterval(countdownInterval);
+                window.location.href = modalData.url;
+                return;
+            }
+            
+            seconds--;
+        }
+    
+        // Iniciar el contador
+        updateCountdown();
+        countdownInterval = setInterval(updateCountdown, 1000);
+    });
+    </script>
+{% endblock %}

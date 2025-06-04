@@ -1,0 +1,172 @@
+{# app/templates/index.html #}
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    {% if session.logged_in %}
+        {% if session.user_role == 'admin' %}
+            <div id="admin-container" class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3>Panel de Administrador</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="bi bi-people-fill"></i> Gestión de Usuarios</h5>
+                                    <p class="card-text">Administra los usuarios del sistema, crea nuevos, modifica roles o elimina existentes.</p>
+                                    <a href="{{ url_for('panel.dashboard') }}" class="btn btn-primary">Ir al Panel</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="bi bi-gear-fill"></i> Configuración del Sistema</h5>
+                                    <p class="card-text">Accede a las opciones avanzadas de configuración y mantenimiento del sistema.</p>
+                                    <a href="#" class="btn btn-secondary">Configurar Sistema</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="bi bi-graph-up"></i> Estadísticas</h5>
+                                    <p class="card-text">Visualiza estadísticas detalladas del uso del sistema y accesos.</p>
+                                    <a href="#" class="btn btn-info text-white">Ver Estadísticas</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="bi bi-shield-lock"></i> Seguridad</h5>
+                                    <p class="card-text">Gestiona ajustes de seguridad, auditorías y logs del sistema.</p>
+                                    <a href="#" class="btn btn-warning text-dark">Revisar Seguridad</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {% elif session.user_role == 'staff' %}
+            <div id="staff-container" class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h3>Panel de Staff</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="bi bi-person-check"></i> Gestión de Clientes</h5>
+                                    <p class="card-text">Administra perfiles de clientes y sus preferencias.</p>
+                                    <a href="#" class="btn btn-success">Administrar Clientes</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="bi bi-file-earmark-text"></i> Reportes</h5>
+                                    <p class="card-text">Genera y descarga reportes sobre la actividad del sistema.</p>
+                                    <a href="#" class="btn btn-info text-white">Generar Reportes</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="bi bi-calendar-check"></i> Actividad Reciente</h5>
+                                    <div class="list-group">
+                                        <a href="#" class="list-group-item list-group-item-action">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <h6 class="mb-1">Actualización de datos</h6>
+                                                <small>Hace 3 días</small>
+                                            </div>
+                                            <p class="mb-1">Se actualizaron los registros de usuarios nuevos.</p>
+                                        </a>
+                                        <a href="#" class="list-group-item list-group-item-action">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <h6 class="mb-1">Reporte mensual</h6>
+                                                <small>Hace 1 semana</small>
+                                            </div>
+                                            <p class="mb-1">El reporte mensual está listo para revisión.</p>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {% else %}
+            <div id="user-container" class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h3>Panel de Usuario</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="bi bi-person-circle"></i> Mi Perfil</h5>
+                                    <p class="card-text">Visualiza y actualiza tu información personal.</p>
+                                    <a href="#" class="btn btn-info text-white">Ver Perfil</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="bi bi-bell"></i> Notificaciones</h5>
+                                    <p class="card-text">Administra tus preferencias de notificaciones.</p>
+                                    <a href="#" class="btn btn-secondary">Configurar Notificaciones</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="bi bi-file-earmark-text"></i> Documentos Recientes</h5>
+                                    <div class="list-group">
+                                        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                            Documento de usuario
+                                            <span class="badge bg-primary rounded-pill">Nuevo</span>
+                                        </a>
+                                        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                            Manual de usuario
+                                            <span class="badge bg-secondary rounded-pill">PDF</span>
+                                        </a>
+                                        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                            Guía de inicio rápido
+                                            <span class="badge bg-info rounded-pill">DOC</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="card">
+            <div class="card-body">
+                <div class="alert alert-primary" role="alert">
+                    <h4 class="alert-heading">¡Bienvenido a la aplicación!</h4>
+                    <p>Esta es una aplicación de gestión con diferentes niveles de acceso según el rol del usuario.</p>
+                    <hr>
+                    <p class="mb-0">Para acceder a las funcionalidades, por favor <a href="{{ url_for('auth.login') }}" class="alert-link">inicie sesión</a>.</p>
+                </div>
+                <div class="text-center mt-4">
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Iniciar Sesión</a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
