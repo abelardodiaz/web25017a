@@ -1,0 +1,430 @@
+{# app/templates/cat/cat_sinc.html #}
+{% extends "base.html" %}
+{% block title %}Sincronizar Catálogo{% endblock %}
+
+{% block content %}
+<main class="container py-4">
+    <!-- Encabezado -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3">Sincronización de Catálogo</h1>
+            <p class="text-muted mb-0">Selecciona productos desde Syscom</p>
+            <small class="text-muted">Vista exclusiva para administradores</small>
+        </div>
+        <div class="d-flex align-items-center">
+            <span class="sync-indicator sync-active me-2"></span>
+            <span class="badge bg-success">Conectado</span>
+        </div>
+    </div>
+
+    <!-- Campos de búsqueda -->
+    <div class="card search-card mb-4">
+        <div class="card-body">
+            <form method="get" action="{{ url_for('catalogo.sincronizar') }}">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="searchTerm" class="form-label">Palabra clave</label>
+                        <input type="text" class="form-control" id="searchTerm" name="searchTerm" 
+                            placeholder="Buscar por modelo, título..." value="{{ request.args.get('searchTerm', '') }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="searchIds" class="form-label">IDs específicos</label>
+                        <input type="text" class="form-control" id="searchIds" name="searchIds" 
+                            placeholder="12345, 67890..." value="{{ request.args.get('searchIds', '') }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="resultLimit" class="form-label">Límite de resultados</label>
+                        <input type="number" class="form-control" id="resultLimit" name="resultLimit" 
+                            value="{{ request.args.get('resultLimit', '20') }}" min="1" max="100">
+                    </div>
+                    <div class="col-12 d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary" id="searchButton">
+                            <i class="bi bi-search me-1"></i>Buscar Productos
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {# Mensajes de flash #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, msg in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ msg }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Mostrar error si hubo -->
+    {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+    <!-- Vista previa de productos -->
+    {% if productos %}
+        <form method="post" action="{{ url_for('catalogo.sincronizar') }}" id="syncForm">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Resultados de búsqueda</h5>
+                    <div>
+                        <button type="button" class="btn btn-sm btn-outline-secondary me-2" id="selectAllBtn">
+                            <i class="bi bi-check-square me-1"></i>Seleccionar Todo
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="deselectAllBtn">
+                            <i class="bi bi-x-square me-1"></i>Deseleccionar Todo
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th width="40px">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="masterCheckbox">
+                                        </div>
+                                    </th>
+                                    <th>ID</th>
+                                    <th>Imagen</th>
+                                    <th>Modelo</th>
+                                    <th>Título</th>
+                                    <th>Marca</th>
+                                    <th>Categorías</th>
+                                    <th>Existencias</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for producto in productos %}
+                                <tr>
+                                    <td>
+                                        <div class="form-check">
+                                            <input class="form-check-input product-checkbox" type="checkbox" 
+                                                name="seleccion" value="{{ producto.id }}" checked>
+                                        </div>
+                                    </td>
+                                    <td>{{ producto.id }}</td>
+                                    <td>
+                                        {% if producto.imagen %}
+                                            <img src="{{ producto.imagen }}" alt="Portada" style="max-height: 50px;">
+                                        {% else %}
+                                            <i class="bi bi-image text-secondary"></i>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ producto.modelo }}</td>
+                                    <td>{{ producto.titulo }}</td>
+                                    <td>{{ producto.marca }}</td>
+                                    <td>{{ producto.categorias | join(', ') }}</td>
+                                    <td><span class="badge bg-success">{{ producto.existencia }}</span></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón de sincronización -->
+            <div class="action-buttons">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="me-3">Productos seleccionados: <strong id="selectedCount">{{ productos|length }}</strong></span>
+                        <span>Total encontrados: <strong>{{ productos|length }}</strong></span>
+                    </div>
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#syncModal">
+                        <i class="bi bi-cloud-arrow-down me-1"></i>Sincronizar Seleccionados
+                    </button>
+                </div>
+            </div>
+        </form>
+    {% endif %}
+
+    <!-- Área de Logs -->
+    <div class="card mt-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Historial de Sincronización</h5>
+            <div>
+                <button class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-arrow-clockwise me-1"></i>Actualizar
+                </button>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="logs-container">
+                <!-- Ejemplo de entradas de log -->
+                <div class="log-entry log-success">
+                    <span class="log-timestamp">12:45:23</span>
+                    <i class="bi bi-check-circle-fill text-success me-1"></i>
+                    Sincronización exitosa: Teclado Mecánico Gaming RGB (SKU001)
+                </div>
+                <div class="log-entry log-error">
+                    <span class="log-timestamp">11:30:15</span>
+                    <i class="bi bi-exclamation-circle-fill text-danger me-1"></i>
+                    Error: No se pudo sincronizar Monitor 24" Full HD (SKU002) - Sin existencias
+                </div>
+                <!-- Los logs reales se cargarán aquí -->
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Modal de confirmación -->
+<div class="modal fade" id="syncModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Sincronización</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de sincronizar los <strong id="syncCount">{{ productos|length if productos else 0 }}</strong> productos seleccionados?</p>
+                <div class="alert alert-warning mt-3">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    Esta acción actualizará los productos en tu catálogo y no se puede deshacer.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" id="confirmSync">Sincronizar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript corregido -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM cargado - Inicializando funcionalidades');
+    
+    // Elementos del DOM
+    const masterCheckbox = document.getElementById('masterCheckbox');
+    const checkboxes = document.querySelectorAll('.product-checkbox');
+    const selectAllBtn = document.getElementById('selectAllBtn');
+    const deselectAllBtn = document.getElementById('deselectAllBtn');
+    const selectedCount = document.getElementById('selectedCount');
+    const confirmSyncBtn = document.getElementById('confirmSync');
+    const syncForm = document.getElementById('syncForm');
+    const syncCountElement = document.getElementById('syncCount');
+
+    console.log('Elementos encontrados:', {
+        masterCheckbox: !!masterCheckbox,
+        checkboxes: checkboxes.length,
+        selectAllBtn: !!selectAllBtn,
+        deselectAllBtn: !!deselectAllBtn,
+        confirmSyncBtn: !!confirmSyncBtn,
+        syncForm: !!syncForm
+    });
+
+    // Función para actualizar contador
+    function updateSelectedCount() {
+        const selected = document.querySelectorAll('.product-checkbox:checked').length;
+        console.log('Productos seleccionados:', selected);
+        
+        if (selectedCount) {
+            selectedCount.textContent = selected;
+        }
+        
+        if (syncCountElement) {
+            syncCountElement.textContent = selected;
+        }
+
+        // Actualizar estado del checkbox maestro
+        if (masterCheckbox && checkboxes.length > 0) {
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            const someChecked = Array.from(checkboxes).some(cb => cb.checked);
+            
+            masterCheckbox.checked = allChecked;
+            masterCheckbox.indeterminate = someChecked && !allChecked;
+        }
+    }
+
+    // Event listener para checkbox maestro
+    if (masterCheckbox && checkboxes.length > 0) {
+        masterCheckbox.addEventListener('change', function(e) {
+            console.log('Master checkbox clicked:', e.target.checked);
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = e.target.checked;
+            });
+            
+            updateSelectedCount();
+        });
+    }
+
+    // Event listeners para botones de selección masiva
+    if (selectAllBtn && checkboxes.length > 0) {
+        selectAllBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Seleccionar todo clicked');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = true;
+            });
+            
+            if (masterCheckbox) {
+                masterCheckbox.checked = true;
+                masterCheckbox.indeterminate = false;
+            }
+            
+            updateSelectedCount();
+        });
+    }
+
+    if (deselectAllBtn && checkboxes.length > 0) {
+        deselectAllBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Deseleccionar todo clicked');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            if (masterCheckbox) {
+                masterCheckbox.checked = false;
+                masterCheckbox.indeterminate = false;
+            }
+            
+            updateSelectedCount();
+        });
+    }
+
+    // Event listeners para checkboxes individuales
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            console.log('Checkbox individual cambiado:', this.value, this.checked);
+            updateSelectedCount();
+        });
+    });
+
+    // Event listener para confirmación de sincronización
+    if (confirmSyncBtn && syncForm) {
+        confirmSyncBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Confirmar sincronización clicked');
+            
+            // Verificar que hay productos seleccionados
+            const selectedProducts = document.querySelectorAll('.product-checkbox:checked');
+            
+            if (selectedProducts.length === 0) {
+                alert('Por favor selecciona al menos un producto para sincronizar.');
+                return;
+            }
+            
+            console.log('Enviando formulario con', selectedProducts.length, 'productos');
+            
+            // Cerrar modal y enviar formulario
+            const modal = bootstrap.Modal.getInstance(document.getElementById('syncModal'));
+            if (modal) {
+                modal.hide();
+            }
+            
+            // Pequeño delay para que se cierre el modal antes de enviar
+            setTimeout(() => {
+                syncForm.submit();
+            }, 300);
+        });
+    }
+
+    // Inicializar contador al cargar
+    updateSelectedCount();
+    
+    console.log('JavaScript inicializado correctamente');
+});
+</script>
+
+<!-- CSS adicional para mejorar la experiencia -->
+<style>
+.sync-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.sync-active {
+    background-color: #28a745;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.search-card {
+    border: 1px solid #e3e6f0;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+}
+
+.logs-container {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+.log-entry {
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0.25rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.875rem;
+}
+
+.log-success {
+    background-color: #d4edda;
+    border-left: 4px solid #28a745;
+}
+
+.log-error {
+    background-color: #f8d7da;
+    border-left: 4px solid #dc3545;
+}
+
+.log-timestamp {
+    color: #6c757d;
+    font-weight: bold;
+    margin-right: 0.5rem;
+}
+
+.action-buttons {
+    position: sticky;
+    bottom: 1rem;
+    background: white;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    border: 1px solid #e3e6f0;
+}
+
+/* Mejorar la apariencia de la tabla */
+.table th {
+    background-color: #f8f9fc;
+    border-bottom: 2px solid #e3e6f0;
+    font-weight: 600;
+    color: #5a5c69;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0,0,0,.075);
+}
+
+/* Mejorar checkboxes */
+.form-check-input:checked {
+    background-color: #4e73df;
+    border-color: #4e73df;
+}
+
+.form-check-input:focus {
+    border-color: #86b7fe;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+}
+</style>
+{% endblock %}

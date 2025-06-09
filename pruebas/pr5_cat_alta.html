@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alta Manual de Productos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        /* Variables de tema */
+        :root[data-theme="light"] {
+            --bg-primary: #fff;
+            --text-primary: #1a1a1a;
+            --accent-color: #0d6efd;
+            --hover-bg: #f8f9fa;
+            --border-color: #dee2e6;
+            --bg-secondary: #ddd;
+            --bg-card: #f8f9fa;
+            --bg-input: #fff;
+        }
+
+        :root[data-theme="dark"] {
+            --bg-primary: #1a1a1a;
+            --text-primary: #fff;
+            --accent-color: #0d6efd;
+            --hover-bg: #2d2d2d;
+            --border-color: #444444;
+            --bg-secondary: #333;
+            --bg-card: #2d2d2d;
+            --bg-input: #333;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .navbar {
+            background-color: var(--bg-primary) !important;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-link, .navbar-brand {
+            color: var(--text-primary);
+        }
+
+        .nav-link:hover, .nav-link:focus {
+            color: var(--accent-color);
+        }
+
+        .btn-outline-light {
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .form-control, .form-select {
+            background-color: var(--bg-input);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: var(--bg-input);
+            color: var(--text-primary);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-primary);
+            opacity: 0.7;
+        }
+
+        .form-control:disabled, .form-select:disabled {
+            background-color: var(--hover-bg);
+            color: var(--text-primary);
+            opacity: 0.5;
+        }
+
+        .footer {
+            background-color: var(--bg-secondary);
+        }
+
+        .image-preview {
+            background-color: var(--bg-secondary);
+            border: 1px dashed var(--border-color);
+            border-radius: 5px;
+            min-height: 150px;
+        }
+
+        .image-preview img {
+            max-width: 100%;
+            max-height: 130px;
+            object-fit: contain;
+        }
+
+        .image-item {
+            transition: all 0.3s ease;
+            background-color: var(--bg-card);
+        }
+
+        .image-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .drag-handle {
+            cursor: move;
+        }
+
+        .tab-content {
+            border-left: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            border-radius: 0 0 5px 5px;
+            padding: 20px;
+            background-color: var(--bg-card);
+        }
+
+        .nav-tabs .nav-link {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+            color: var(--text-primary);
+        }
+
+        .nav-tabs .nav-link.active {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--bg-card);
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        .required::after {
+            content: " *";
+            color: #dc3545;
+        }
+
+        .file-drop-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 5px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s;
+            background-color: var(--bg-card);
+        }
+
+        .file-drop-area.active {
+            border-color: var(--accent-color);
+            background-color: var(--hover-bg);
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            border-color: #ffc107;
+            color: #1a1a1a;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            border-color: #ffeeba;
+            color: #856404;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+
+        .info-icon {
+            cursor: pointer;
+            color: var(--accent-color);
+            margin-left: 5px;
+        }
+
+        .preview-container {
+            position: relative;
+        }
+
+        .preview-container .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- Barra de navegación -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-box-seam me-2"></i>CatálogoApp
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+                
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="bi bi-house-door me-1"></i> Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="bi bi-speedometer2 me-1"></i> Panel</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#"><i class="bi bi-plus-circle me-1"></i> Alta Productos</a>
+                    </li>
+                </ul>
+        
+                <div class="d-flex align-items-center gap-2">
+                    <div class="dropdown">
+                        <button class="btn btn-secondary" id="themeDropdown">
+                            <i class="bi bi-moon-stars"></i>
+                        </button>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle me-1"></i>Admin
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Configuración</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#"><i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <main class="container mt-4 mb-5">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h1 class="mb-0">Alta Manual de Productos</h1>
+                        <p class="text-muted">Añade productos manualmente o por carga masiva</p>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-info">
+                            <i class="bi bi-shield-lock me-1"></i>Vista exclusiva para administradores
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Pestañas -->
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="individual-tab" data-bs-toggle="tab" data-bs-target="#individual" type="button" role="tab">
+                            <i class="bi bi-plus-lg me-1"></i>Alta Individual
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="mass-tab" data-bs-toggle="tab" data-bs-target="#mass" type="button" role="tab">
+                            <i class="bi bi-file-earmark-spreadsheet me-1"></i>Carga Masiva
+                        </button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content" id="myTabContent">
+                    <!-- Pestaña de Alta Individual -->
+                    <div class="tab-pane fade show active" id="individual" role="tabpanel">
+                        <form id="productForm">
+                            <!-- Información básica -->
+                            <div class="card mb-4">
+                                <div class="card-header bg-transparent">
+                                    <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Información básica</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="modelo" class="form-label required">Modelo</label>
+                                            <input type="text" class="form-control" id="modelo" required>
+                                            <div class="invalid-feedback">Por favor ingresa el modelo del producto.</div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="titulo" class="form-label required">Título</label>
+                                            <input type="text" class="form-control" id="titulo" required>
+                                            <div class="invalid-feedback">Por favor ingresa un título para el producto.</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="descripcion" class="form-label required">Descripción</label>
+                                        <textarea class="form-control" id="descripcion" rows="4" required></textarea>
+                                        <div class="invalid-feedback">Por favor ingresa una descripción del producto.</div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="marca" class="form-label required">Marca</label>
+                                            <select class="form-select" id="marca" required>
+                                                <option value="">Selecciona una marca</option>
+                                                <option value="1">Apple</option>
+                                                <option value="2">Samsung</option>
+                                                <option value="3">Sony</option>
+                                                <option value="4">HP</option>
+                                                <option value="5">Dell</option>
+                                            </select>
+                                            <div class="invalid-feedback">Por favor selecciona una marca.</div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="categoria" class="form-label required">Categoría</label>
+                                            <select class="form-select" id="categoria" required>
+                                                <option value="">Selecciona una categoría</option>
+                                                <option value="1">Electrónicos</option>
+                                                <option value="2">Computadoras</option>
+                                                <option value="3">Móviles</option>
+                                                <option value="4">Accesorios</option>
+                                                <option value="5">Audio</option>
+                                            </select>
+                                            <div class="invalid-feedback">Por favor selecciona una categoría.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Precios e inventario -->
+                            <div class="card mb-4">
+                                <div class="card-header bg-transparent">
+                                    <h5 class="mb-0"><i class="bi bi-tag me-2"></i>Precios e Inventario</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-3 mb-3">
+                                            <label for="existencias" class="form-label required">Existencias</label>
+                                            <input type="number" class="form-control" id="existencias" min="0" required>
+                                            <div class="invalid-feedback">Las existencias deben ser un número positivo.</div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label for="precio" class="form-label required">Precio Público</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">$</span>
+                                                <input type="number" class="form-control" id="precio" min="0" step="0.01" required>
+                                            </div>
+                                            <div class="invalid-feedback">El precio debe ser un valor positivo.</div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label for="margen" class="form-label">Margen (%)</label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="margen" min="0" max="100" step="0.1">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label for="descuento" class="form-label">Descuento (%)</label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="descuento" min="0" max="100" step="0.1">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="visibilidad" checked>
+                                                <label class="form-check-label" for="visibilidad">Visibilidad en catálogo</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="estado" class="form-label">Estado</label>
+                                            <select class="form-select" id="estado">
+                                                <option value="completo">Completo</option>
+                                                <option value="borrador">Borrador</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Gestión de imágenes -->
+                            <div class="card mb-4">
+                                <div class="card-header bg-transparent">
+                                    <h5 class="mb-0"><i class="bi bi-images me-2"></i>Imágenes del Producto</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-4">
+                                        <label class="form-label">Agregar imágenes</label>
+                                        <div class="row">
+                                            <div class="col-md-8 mb-3">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" id="imageUrl" placeholder="https://ejemplo.com/imagen.jpg">
+                                                    <button class="btn btn-outline-primary" type="button" id="addUrlBtn">
+                                                        <i class="bi bi-link-45deg"></i> Agregar URL
+                                                    </button>
+                                                </div>
+                                                <div class="form-text">Formatos soportados: JPG, PNG. Tamaño máximo: 2MB</div>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <button class="btn btn-primary w-100" type="button" id="uploadBtn">
+                                                    <i class="bi bi-upload me-1"></i>Subir desde dispositivo
+                                                </button>
+                                                <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="image-preview d-flex align-items-center justify-content-center p-3 mb-3" id="imagePreview">
+                                            <div class="text-center">
+                                                <i class="bi bi-card-image display-4 mb-2"></i>
+                                                <p class="mb-0">Arrastra imágenes aquí o usa los botones de arriba</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Imágenes seleccionadas</label>
+                                        <div class="alert alert-info">
+                                            <i class="bi bi-info-circle me-2"></i>Arrastra las imágenes para reordenarlas. La primera será la imagen principal.
+                                        </div>
+                                        <div id="imageList" class="row g-3">
+                                            <!-- Las imágenes se añadirán aquí dinámicamente -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Botones de acción -->
+                            <div class="d-flex justify-content-between">
+                                <button type="button" class="btn btn-outline-secondary">
+                                    <i class="bi bi-x-circle me-1"></i>Cancelar
+                                </button>
+                                <div>
+                                    <button type="button" class="btn btn-warning me-2" id="saveDraftBtn">
+                                        <i class="bi bi-save me-1"></i>Guardar como borrador
+                                    </button>
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="bi bi-check-circle me-1"></i>Guardar producto
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Pestaña de Carga Masiva -->
+                    <div class="tab-pane fade" id="mass" role="tabpanel">
+                        <div class="card mb-4">
+                            <div class="card-header bg-transparent">
+                                <h5 class="mb-0"><i class="bi bi-file-earmark-spreadsheet me-2"></i>Carga Masiva desde Archivo</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-4">
+                                    <div class="file-drop-area" id="dropArea">
+                                        <div class="mb-3">
+                                            <i class="bi bi-cloud-arrow-up display-4"></i>
+                                        </div>
+                                        <h5>Arrastra tu archivo aquí</h5>
+                                        <p class="text-muted">o</p>
+                                        <button class="btn btn-primary mb-3" id="selectFileBtn">
+                                            <i class="bi bi-folder2-open me-1"></i>Seleccionar archivo
+                                        </button>
+                                        <p class="small mb-0">Formatos soportados: .csv, .xlsx, .xls</p>
+                                        <input type="file" id="massFileInput" accept=".csv, .xlsx, .xls" style="display: none;">
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <h5><i class="bi bi-info-circle me-2"></i>Requisitos del archivo</h5>
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <ul>
+                                                <li>El archivo debe contener las siguientes columnas: <code>Modelo, Título, Descripción, Marca, Categoría, Existencias, Precio, Margen, Descuento, Visibilidad, Estado</code></li>
+                                                <li>Las primeras filas pueden ser ignoradas si contienen encabezados</li>
+                                                <li>Formato de fechas: DD/MM/AAAA</li>
+                                                <li>Los valores numéricos deben usar punto como separador decimal</li>
+                                                <li>Tamaño máximo del archivo: 10MB</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="saveAsDraft" checked>
+                                        <label class="form-check-label" for="saveAsDraft">
+                                            Guardar productos como borradores si faltan datos obligatorios
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-end">
+                                        <button type="button" class="btn btn-warning" id="processFileBtn">
+                                            <i class="bi bi-gear me-1"></i>Procesar archivo
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header bg-transparent">
+                                <h5 class="mb-0"><i class="bi bi-list-check me-2"></i>Resultados de la Carga</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle me-2"></i>Sube un archivo para ver los resultados del procesamiento.
+                                </div>
+                                
+                                <div class="progress mb-3" style="height: 25px; display: none;" id="progressBar">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%">0%</div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-3">
+                                        <div class="card border-success">
+                                            <div class="card-body text-center">
+                                                <h5 class="card-title text-success">Correctos</h5>
+                                                <h3 class="mb-0">0</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card border-warning">
+                                            <div class="card-body text-center">
+                                                <h5 class="card-title text-warning">Borradores</h5>
+                                                <h3 class="mb-0">0</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card border-danger">
+                                            <div class="card-body text-center">
+                                                <h5 class="card-title text-danger">Errores</h5>
+                                                <h3 class="mb-0">0</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card border-info">
+                                            <div class="card-body text-center">
+                                                <h5 class="card-title text-info">Total</h5>
+                                                <h3 class="mb-0">0</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-end mt-3">
+                                    <button type="button" class="btn btn-success" disabled id="confirmUploadBtn">
+                                        <i class="bi bi-cloud-upload me-1"></i>Confirmar carga
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="footer mt-auto py-3">
+        <div class="container">
+            <div class="text-center">
+                &copy; 2025 Sistema de Catálogo - v1.0
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Selector de temas
+        document.addEventListener('DOMContentLoaded', () => {
+            // Cargar tema desde localStorage
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            
+            // Actualizar ícono según tema
+            updateThemeIcon(savedTheme);
+
+            // Configurar el selector de temas
+            document.getElementById('themeDropdown').addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                
+                // Actualizar ícono
+                updateThemeIcon(newTheme);
+            });
+            
+            // Gestión de imágenes
+            setupImageHandling();
+            
+            // Validación de formulario
+            document.getElementById('productForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (validateForm()) {
+                    showSuccessAlert('Producto guardado correctamente.');
+                }
+            });
+            
+            // Botón de borrador
+            document.getElementById('saveDraftBtn').addEventListener('click', function() {
+                if (validateForm(true)) {
+                    showWarningAlert('Producto guardado como borrador, no visible en el catálogo.');
+                }
+            });
+        });
+        
+        function updateThemeIcon(theme) {
+            const icon = document.querySelector('#themeDropdown i');
+            icon.className = theme === 'dark' ? 'bi bi-moon-stars' : 'bi bi-sun';
+        }
+        
+        function setupImageHandling() {
+            const imagePreview = document.getElementById('imagePreview');
+            const imageList = document.getElementById('imageList');
+            const fileInput = document.getElementById('fileInput');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const addUrlBtn = document.getElementById('addUrlBtn');
+            const imageUrl = document.getElementById('imageUrl');
+            
+            // Abrir selector de archivos al hacer clic en el botón
+            uploadBtn.addEventListener('click', () => fileInput.click());
+            
+            // Manejar selección de archivos
+            fileInput.addEventListener('change', handleFileSelect);
+            
+            // Permitir arrastrar y soltar
+            imagePreview.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                imagePreview.classList.add('active');
+            });
+            
+            imagePreview.addEventListener('dragleave', () => {
+                imagePreview.classList.remove('active');
+            });
+            
+            imagePreview.addEventListener('drop', (e) => {
+                e.preventDefault();
+                imagePreview.classList.remove('active');
+                
+                if (e.dataTransfer.files.length) {
+                    handleFiles(e.dataTransfer.files);
+                }
+            });
+            
+            // Agregar imagen desde URL
+            addUrlBtn.addEventListener('click', () => {
+                const url = imageUrl.value.trim();
+                if (url && isValidImageUrl(url)) {
+                    addImageToList(url);
+                    imageUrl.value = '';
+                } else {
+                    alert('Por favor ingresa una URL válida de imagen (jpg, png)');
+                }
+            });
+        }
+        
+        function handleFileSelect(e) {
+            handleFiles(e.target.files);
+        }
+        
+        function handleFiles(files) {
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                
+                // Validar tipo y tamaño
+                if (!isValidImage(file)) {
+                    alert(`El archivo ${file.name} no es válido. Solo se permiten JPG/PNG de menos de 2MB.`);
+                    continue;
+                }
+                
+                // Crear vista previa
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    addImageToList(e.target.result, file.name);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function isValidImage(file) {
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+            const maxSize = 2 * 1024 * 1024; // 2MB
+            
+            return validTypes.includes(file.type) && file.size <= maxSize;
+        }
+        
+        function isValidImageUrl(url) {
+            return /\.(jpeg|jpg|png)$/i.test(url);
+        }
+        
+        function addImageToList(src, name = 'Imagen') {
+            const id = 'img-' + Date.now();
+            const imageItem = document.createElement('div');
+            imageItem.className = 'col-md-3 image-item';
+            imageItem.innerHTML = `
+                <div class="card">
+                    <div class="card-body p-2">
+                        <div class="preview-container">
+                            <img src="${src}" class="img-fluid rounded" alt="${name}">
+                            <div class="remove-btn" data-id="${id}">
+                                <i class="bi bi-x"></i>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-2">
+                            <span class="small text-truncate">${name}</span>
+                            <span class="drag-handle"><i class="bi bi-grip-horizontal"></i></span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('imageList').appendChild(imageItem);
+            
+            // Agregar evento para eliminar imagen
+            imageItem.querySelector('.remove-btn').addEventListener('click', function() {
+                this.closest('.image-item').remove();
+            });
+        }
+        
+        function validateForm(isDraft = false) {
+            let isValid = true;
+            const form = document.getElementById('productForm');
+            
+            // Validar campos obligatorios
+            const requiredFields = form.querySelectorAll('[required]');
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            });
+            
+            // Validar números positivos
+            const numberFields = ['existencias', 'precio'];
+            numberFields.forEach(id => {
+                const field = document.getElementById(id);
+                if (field.value && parseFloat(field.value) < 0) {
+                    field.classList.add('is-invalid');
+                    isValid = false;
+                }
+            });
+            
+            return isDraft ? true : isValid; // Los borradores pueden tener campos vacíos
+        }
+        
+        function showSuccessAlert(message) {
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-success alert-dismissible fade show';
+            alert.role = 'alert';
+            alert.innerHTML = `
+                <i class="bi bi-check-circle-fill me-2"></i>${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.querySelector('main').prepend(alert);
+        }
+        
+        function showWarningAlert(message) {
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-warning alert-dismissible fade show';
+            alert.role = 'alert';
+            alert.innerHTML = `
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.querySelector('main').prepend(alert);
+        }
+    </script>
+</body>
+</html>

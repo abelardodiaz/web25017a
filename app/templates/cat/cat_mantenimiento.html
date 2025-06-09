@@ -1,0 +1,321 @@
+{% extends "base.html" %}
+{% block title %}Catalogo Mantenimiento{% endblock %}
+
+{% block content %}
+<!-- Encabezado -->
+<div class="header-section">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h3 mb-1">Mantenimiento de Catálogo</h1>
+                <p class="mb-0">Edita productos y gestiona imágenes</p>
+            </div>
+            <div>
+                <span class="badge bg-secondary">Vista exclusiva para administradores</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <!-- Barra de Filtros -->
+    <div class="filter-card">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control" placeholder="Buscar por nombre..." id="searchInput" value="{{ search_term }}">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="marcaSelect">
+                    <option value="" {% if not selected_marca %}selected{% endif %}>Todas las marcas</option>
+                    {% for marca in marcas %}
+                    <option value="{{ marca.id }}" {% if selected_marca == marca.id %}selected{% endif %}>{{ marca.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="categoriaSelect">
+                    <option value="" {% if not selected_categoria %}selected{% endif %}>Todas las categorías</option>
+                    {% for categoria in categorias %}
+                    <option value="{{ categoria.id }}" {% if selected_categoria == categoria.id %}selected{% endif %}>{{ categoria.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-primary w-100" id="searchButton">
+                    <i class="bi bi-funnel me-1"></i> Buscar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Productos -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Productos Sincronizados</h5>
+            <span class="badge bg-primary">{{ productos|length }} productos</span>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Modelo</th>
+                            <th>Título</th>
+                            <th>Marca</th>
+                            <th>Categoría</th>
+                            <th>Existencias</th>
+                            <th>Precio</th>
+                            <th>Margen</th>
+                            <th>Descuento</th>
+                            <th>Visible</th>
+                            <th>Imágenes</th>
+                            <th class="actions-cell">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for producto in productos %}
+                        <tr>
+                            <td>{{ producto.id }}</td>
+                            <td>{{ producto.modelo }}</td>
+                            <td>{{ producto.titulo }}</td>
+                            <td>{{ producto.marca.nombre if producto.marca else 'Sin Marca' }}</td>
+                            <td>
+                                {% if producto.categorias %}
+                                    {{ producto.categorias[0].nombre }}
+                                {% else %}
+                                    Sin Categoría
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge badge-stock {{ 'high' if producto.total_existencia > 10 else 'medium' if producto.total_existencia > 0 else 'low' }}">
+                                    {{ producto.total_existencia }}
+                                </span>
+                            </td>
+                            <td>${{ "{:,.2f}".format(producto.precio_publico) if producto.precio_publico else 'N/A' }}</td>
+                            <td>{{ producto.margen }}%</td>
+                            <td>{{ producto.descuento }}%</td>
+                            <td>
+                                <div class="form-check form-switch switch-custom">
+                                    <input class="form-check-input" type="checkbox" {{ 'checked' if producto.visible else '' }}>
+                                </div>
+                            </td>
+                            <td>
+                                {% if producto.imagenes %}
+                                    <span class="badge bg-success">Sí</span>
+                                {% else %}
+                                    <span class="badge bg-danger">No</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <button class="btn btn-primary btn-action" data-bs-toggle="modal" data-bs-target="#editModal{{ producto.id }}">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                                <button class="btn btn-info btn-action" data-bs-toggle="modal" data-bs-target="#imagesModal{{ producto.id }}">
+                                    <i class="bi bi-images"></i>
+                                </button>
+                                <button class="btn btn-danger btn-action">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            <nav>
+                <ul class="pagination justify-content-center">
+                    {% if pagination.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('catalogo.mantenimiento', page=pagination.prev_num, search=search_term, marca=selected_marca, categoria=selected_categoria) }}">Anterior</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1">Anterior</a>
+                    </li>
+                    {% endif %}
+                    {% for p in pagination.iter_pages() %}
+                    {% if p %}
+                    <li class="page-item {{ 'active' if p == pagination.page else '' }}">
+                        <a class="page-link" href="{{ url_for('catalogo.mantenimiento', page=p, search=search_term, marca=selected_marca, categoria=selected_categoria) }}">{{ p }}</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">...</a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                    {% if pagination.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('catalogo.mantenimiento', page=pagination.next_num, search=search_term, marca=selected_marca, categoria=selected_categoria) }}">Siguiente</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">Siguiente</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+<!-- Modales para cada producto -->
+{% for producto in productos %}
+<!-- Modal de Edición de Datos -->
+<div class="modal fade" id="editModal{{ producto.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Producto: {{ producto.titulo }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editProductForm{{ producto.id }}">
+                    <div class="mb-3">
+                        <label class="form-label">Visibilidad</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="visibilitySwitch{{ producto.id }}" {{ 'checked' if producto.visible else '' }}>
+                            <label class="form-check-label" for="visibilitySwitch{{ producto.id }}">Producto visible en catálogo</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Precio Público ($)</label>
+                            <input type="number" class="form-control" value="{{ producto.precio_publico }}" min="0" step="0.01">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Margen (%)</label>
+                            <input type="number" class="form-control" value="{{ producto.margen }}" min="0" max="100" step="0.1">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descuento (%)</label>
+                        <input type="number" class="form-control" value="{{ producto.descuento }}" min="0" max="100" step="1">
+                        <div class="form-text">Descuento promocional aplicado al precio público</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Precio Final Calculado</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="text" class="form-control" value="{{ '{:,.2f}'.format(producto.precio_publico * (1 - producto.descuento / 100)) if producto.precio_publico and producto.descuento is not none else 'N/A' }}" readonly>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Gestión de Imágenes -->
+<div class="modal fade" id="imagesModal{{ producto.id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Imágenes del Producto: {{ producto.titulo }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    Cambiar el orden de las imágenes afectará cómo se muestran en el catálogo.
+                </div>
+                <h6 class="mt-4 mb-3">Imágenes Existentes</h6>
+                <div class="row g-3" id="existingImages{{ producto.id }}">
+                    {% for imagen in producto.imagenes %}
+                    <div class="col-md-4">
+                        <div class="card image-card">
+                            <img src="{{ imagen.url }}" class="image-thumbnail card-img-top" alt="Imagen de producto">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <label class="form-label">Orden:</label>
+                                    <input type="number" class="form-control image-order-input" value="{{ imagen.orden }}" min="1">
+                                </div>
+                                <button class="btn btn-sm btn-danger w-100">
+                                    <i class="bi bi-trash me-1"></i> Eliminar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <hr class="my-4">
+                <h6 class="mb-3">Agregar Nueva Imagen</h6>
+                <ul class="nav nav-tabs mb-3" id="imageTab{{ producto.id }}" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="url-tab{{ producto.id }}" data-bs-toggle="tab" data-bs-target="#url{{ producto.id }}" type="button" role="tab">URL de Imagen</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="upload-tab{{ producto.id }}" data-bs-toggle="tab" data-bs-target="#upload{{ producto.id }}" type="button" role="tab">Subir Archivo</button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="imageTabContent{{ producto.id }}">
+                    <div class="tab-pane fade show active" id="url{{ producto.id }}" role="tabpanel">
+                        <div class="mb-3">
+                            <label class="form-label">URL de la imagen</label>
+                            <input type="url" class="form-control" placeholder="https://ejemplo.com/imagen.jpg">
+                            <div class="invalid-feedback">Por favor, ingresa una URL válida que comience con http:// o https://</div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="upload{{ producto.id }}" role="tabpanel">
+                        <div class="mb-3">
+                            <label class="form-label">Seleccionar archivo</label>
+                            <input class="form-control" type="file" accept="image/jpeg,image/png">
+                            <div class="form-text">Formatos permitidos: JPG, PNG. Tamaño máximo: 2MB</div>
+                            <div class="invalid-feedback">El archivo debe ser una imagen JPG o PNG menor a 2MB</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="preview-container">
+                    <img id="imagePreview{{ producto.id }}" class="preview-image" alt="Vista previa">
+                    <span class="text-muted" id="previewText{{ producto.id }}">Vista previa de la imagen aparecerá aquí</span>
+                </div>
+                <div class="alert alert-info mt-3">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Las imágenes agregadas reemplazarán las existentes si se excede el límite permitido.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Contenedor de Alertas -->
+<div class="alert-container">
+    <!-- Las alertas se mostrarán aquí dinámicamente -->
+</div>
+
+<script>
+document.getElementById('searchButton').addEventListener('click', function() {
+    const searchTerm = document.getElementById('searchInput').value;
+    const marcaId = document.getElementById('marcaSelect').value;
+    const categoriaId = document.getElementById('categoriaSelect').value;
+    
+    let url = '/catalogo/mantenimiento?';
+    if (searchTerm) {
+        url += 'search=' + encodeURIComponent(searchTerm) + '&';
+    }
+    if (marcaId) {
+        url += 'marca=' + marcaId + '&';
+    }
+    if (categoriaId) {
+        url += 'categoria=' + categoriaId + '&';
+    }
+    window.location.href = url;
+});
+</script>
+<script src="{{ url_for('static', filename='js/cat.js') }}"></script>   
+
+{% endblock %}

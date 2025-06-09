@@ -1,0 +1,39 @@
+<!-- app/templates/panel_credenciales_lista.html -->
+{% extends "base.html" %}
+{% block title %}Credenciales Syscom{% endblock %}
+
+{% block content %}
+<h3>Credenciales Syscom</h3>
+<a class="btn btn-primary mb-3" href="{{ url_for('panel.new_credential') }}">Nueva credencial</a>
+
+<table class="table table-striped">
+  <thead><tr><th>ID</th><th>Client ID</th><th>Token</th><th>Expira</th><th>Acciones</th></tr></thead>
+  <tbody>
+  {% if creds %}  
+  {% for c in creds %}
+    <tr>
+      <td>{{ c.id }}</td>
+      <td>{{ c.client_id[:6] }}…</td>
+      <td>{{ c.token and c.token[:10] ~ "…" if c.token else "—" }}</td>
+      <td>{{ c.expires_at.strftime('%Y-%m-%d %H:%M') if c.expires_at else "—" }}</td>
+      <td>
+        <form method="post" action="{{ url_for('panel.renew_credential', cred_id=c.id) }}">
+            {{ form.hidden_tag() }}  <!-- Usa el EmptyForm -->
+            <button class="btn btn-sm btn-success">Renovar</button>
+        </form>
+        <form class="d-inline" method="post" action="{{ url_for('panel.delete_credential', cred_id=c.id) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <button class="btn btn-sm btn-danger">Eliminar</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  {% else %}
+    <tr>
+      <td colspan="5" class="text-center">No hay credenciales registradas</td>
+    </tr>
+  {% endif %}
+  </tbody>
+ 
+</table>
+{% endblock %}

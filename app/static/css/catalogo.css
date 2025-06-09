@@ -1,0 +1,236 @@
+/* ESTILOS ESPECÍFICOS PARA MODALES - Reemplazar en catalogo.css */
+
+/* Modal principal */
+.modal-content {
+    background-color: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+.modal-header {
+    background-color: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+.modal-body {
+    background-color: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+}
+
+.modal-footer {
+    background-color: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+    border-top: 1px solid var(--border-color) !important;
+}
+
+.modal-title {
+    color: var(--text-primary) !important;
+}
+
+/* Form elements en modales */
+.modal .form-control {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+.modal .form-control:focus {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--accent-color) !important;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25) !important;
+}
+
+.modal .form-control::placeholder {
+    color: var(--text-primary) !important;
+    opacity: 0.6 !important;
+}
+
+.modal .form-control[readonly] {
+    background-color: var(--hover-bg) !important;
+    color: var(--text-primary) !important;
+    opacity: 0.8 !important;
+}
+
+.modal .form-select {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+.modal .form-select:focus {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--accent-color) !important;
+}
+
+.modal .form-label {
+    color: var(--text-primary) !important;
+}
+
+.modal .form-text {
+    color: var(--text-primary) !important;
+    opacity: 0.7 !important;
+}
+
+.modal .form-check-label {
+    color: var(--text-primary) !important;
+}
+
+/* Input group */
+.modal .input-group-text {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+/* Cards dentro de modales */
+.modal .card {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+.modal .card-body {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+}
+
+.modal .image-card {
+    background-color: var(--bg-secondary) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+.modal .image-card .card-body {
+    background-color: var(--bg-secondary) !important;
+}
+
+/* Preview container */
+.modal .preview-container {
+    background-color: var(--bg-secondary) !important;
+    border: 2px dashed var(--border-color) !important;
+    color: var(--text-primary) !important;
+    padding: 2rem !important;
+    text-align: center !important;
+    border-radius: 0.5rem !important;
+}
+
+.modal .preview-image {
+    max-width: 100% !important;
+    max-height: 200px !important;
+    display: block !important;
+    margin: 0 auto !important;
+}
+
+.modal .text-muted {
+    color: var(--text-primary) !important;
+    opacity: 0.6 !important;
+}
+
+/* Tabs */
+.modal .nav-tabs {
+    border-bottom: 1px solid var(--border-color) !important;
+    background-color: var(--bg-primary) !important;
+}
+
+.modal .nav-tabs .nav-link {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color) !important;
+    border-bottom: none !important;
+}
+
+.modal .nav-tabs .nav-link:hover {
+    background-color: var(--hover-bg) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+}
+
+.modal .nav-tabs .nav-link.active {
+    background-color: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+    border-bottom: 1px solid var(--bg-primary) !important;
+}
+
+.modal .tab-content {
+    background-color: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+}
+
+.modal .tab-pane {
+    background-color: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Alerts en modales */
+.modal .alert {
+    border: 1px solid !important;
+}
+
+.modal .alert-warning {
+    background-color: rgba(255, 193, 7, 0.1) !important;
+    border-color: rgba(255, 193, 7, 0.3) !important;
+    color: var(--text-primary) !important;
+}
+
+.modal .alert-info {
+    background-color: rgba(13, 202, 240, 0.1) !important;
+    border-color: rgba(13, 202, 240, 0.3) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Headers h6 */
+.modal h6 {
+    color: var(--text-primary) !important;
+    font-weight: 600 !important;
+}
+
+/* HR separator */
+.modal hr {
+    border-color: var(--border-color) !important;
+    opacity: 0.5 !important;
+}
+
+/* Botón cerrar - ajustado para temas */
+.modal .btn-close {
+    background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='m.235 2.005 1.938-1.938 12.075 12.075-1.938 1.938L.235 2.005z'/%3e%3cpath d='m14.247 2.005-1.938-1.938L.234 12.142l1.938 1.938L14.247 2.005z'/%3e%3c/svg%3e") center/1em auto no-repeat !important;
+    filter: none !important;
+}
+
+/* Botón cerrar para tema oscuro */
+[data-theme="dark"] .modal .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%) !important;
+}
+
+/* Image thumbnail */
+.modal .image-thumbnail {
+    max-height: 150px !important;
+    object-fit: contain !important;
+    width: 100% !important;
+}
+
+/* Input específico para orden de imagen */
+.modal .image-order-input {
+    width: 60px !important;
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+/* Switch específico */
+.modal .form-check-input {
+    background-color: var(--bg-secondary) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+.modal .form-check-input:checked {
+    background-color: var(--accent-color) !important;
+    border-color: var(--accent-color) !important;
+}
+
+.modal .form-check-input:focus {
+    border-color: var(--accent-color) !important;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+}

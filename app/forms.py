@@ -1,4 +1,4 @@
-# forms.py
+# app/forms.py
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, validators, BooleanField, SelectField
 from wtforms.validators import DataRequired, Email, Optional, Length
@@ -10,7 +10,7 @@ class SetupForm(FlaskForm):
     ])
     password = PasswordField('Contraseña', [
         validators.DataRequired(),
-        validators.Length(max=128, message='La contraseña no puede exceder los 128 caracteres.'),
+        validators.Length(min=8, max=128),  # Longitud mínima 8
         validators.EqualTo('confirm', message='Las contraseñas deben coincidir')
     ])
     confirm = PasswordField('Repetir Contraseña')
@@ -42,3 +42,7 @@ class UserForm(FlaskForm):
 
 class EmptyForm(FlaskForm):
     pass
+
+class SyscomCredentialForm(FlaskForm):
+    client_id     = StringField('Client ID', validators=[DataRequired()])
+    client_secret = StringField('Client Secret', validators=[DataRequired()])

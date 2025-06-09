@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sincronización de Catálogo | Syscom</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        /* Variables de tema consistentes con base.css */
+        :root {
+            --bg-primary: #1a1a1a;
+            --text-primary: #fff;
+            --accent-color: #0d6efd;
+            --hover-bg: #2d2d2d;
+            --border-color: #444444;
+            --bg-secondary: #333;
+        }
+        
+        :root[data-theme="light"] {
+            --bg-primary: #fff;
+            --text-primary: #1a1a1a;
+            --accent-color: #0d6efd;
+            --hover-bg: #f8f9fa;
+            --border-color: #dee2e6;
+            --bg-secondary: #ddd;
+        }
+        
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        .card {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        
+        .form-control, .form-select {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        
+        .form-control:focus, .form-select:focus {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+        
+        .form-control::placeholder {
+            color: var(--text-primary);
+            opacity: 0.7;
+        }
+        
+        .table {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        
+        .table tbody tr {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: var(--hover-bg);
+            color: var(--text-primary);
+        }
+        
+        .table thead th {
+            background-color: var(--hover-bg);
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .table th, .table td {
+            border-color: var(--border-color);
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        
+        .log-entry {
+            padding: 8px 12px;
+            margin: 4px 0;
+            border-left: 4px solid transparent;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        .log-success {
+            border-left-color: #28a745;
+            background-color: rgba(40, 167, 69, 0.1);
+        }
+        
+        .log-error {
+            border-left-color: #dc3545;
+            background-color: rgba(220, 53, 69, 0.1);
+        }
+        
+        .log-timestamp {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-right: 10px;
+        }
+        
+        .search-card {
+            transition: all 0.3s ease;
+        }
+        
+        .search-card:hover {
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+        
+        .img-available {
+            color: #28a745;
+        }
+        
+        .img-not-available {
+            color: #dc3545;
+        }
+        
+        .badge-light {
+            background-color: var(--hover-bg);
+            color: var(--text-primary);
+        }
+        
+        .action-buttons {
+            position: sticky;
+            bottom: 0;
+            background-color: var(--bg-primary);
+            padding: 15px;
+            border-top: 1px solid var(--border-color);
+            z-index: 100;
+        }
+        
+        .logs-container {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .sync-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        .sync-active {
+            background-color: #28a745;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 12px;
+        }
+        
+        .table-responsive {
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        
+        .product-img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            border-radius: 4px;
+            background-color: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navegación simulada para mantener consistencia -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-box-seam me-2"></i>SyscomSync
+            </a>
+            <div class="d-flex align-items-center gap-2">
+                <div class="dropdown">
+                    <button class="btn btn-secondary" id="themeDropdown">
+                        <i class="bi bi-moon-stars"></i>
+                    </button>
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle me-1"></i>Admin
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#">Panel</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger" href="#">Cerrar Sesión</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-4 mb-5">
+        <!-- Encabezado -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3">Sincronización de Catálogo</h1>
+                <p class="text-muted mb-0">Selecciona productos desde Syscom</p>
+                <small class="text-muted">Vista exclusiva para administradores</small>
+            </div>
+            <div class="d-flex align-items-center">
+                <span class="sync-indicator sync-active me-2"></span>
+                <span class="badge bg-success">Conectado</span>
+            </div>
+        </div>
+
+        <!-- Campos de búsqueda -->
+        <div class="card search-card mb-4">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="searchTerm" class="form-label">Palabra clave</label>
+                        <input type="text" class="form-control" id="searchTerm" placeholder="Buscar por modelo, título...">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="searchIds" class="form-label">IDs específicos</label>
+                        <input type="text" class="form-control" id="searchIds" placeholder="12345, 67890...">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="resultLimit" class="form-label">Límite de resultados</label>
+                        <input type="number" class="form-control" id="resultLimit" value="20" min="1" max="100">
+                    </div>
+                    <div class="col-12 d-flex justify-content-end">
+                        <button class="btn btn-primary" id="searchButton">
+                            <i class="bi bi-search me-1"></i>Buscar Productos
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vista previa de productos -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Resultados de búsqueda</h5>
+                <div>
+                    <button class="btn btn-sm btn-outline-secondary me-2" id="selectAllBtn">
+                        <i class="bi bi-check-square me-1"></i>Seleccionar Todo
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary" id="deselectAllBtn">
+                        <i class="bi bi-x-square me-1"></i>Deseleccionar Todo
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th width="40px">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="masterCheckbox">
+                                    </div>
+                                </th>
+                                <th>ID</th>
+                                <th>Imagen</th>
+                                <th>Modelo</th>
+                                <th>Título</th>
+                                <th>Marca</th>
+                                <th>Categoría</th>
+                                <th>Existencias</th>
+                                <th>Disponible</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Producto 1 -->
+                            <tr>
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input product-checkbox" type="checkbox" checked>
+                                    </div>
+                                </td>
+                                <td>SKU001</td>
+                                <td>
+                                    <div class="product-img">
+                                        <i class="bi bi-image text-success"></i>
+                                    </div>
+                                </td>
+                                <td>MOD-2024</td>
+                                <td>Teclado Mecánico Gaming RGB</td>
+                                <td>Logitech</td>
+                                <td>Periféricos</td>
+                                <td><span class="badge bg-success">42</span></td>
+                                <td><span class="img-available">Sí</span></td>
+                            </tr>
+                            <!-- Producto 2 -->
+                            <tr>
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input product-checkbox" type="checkbox">
+                                    </div>
+                                </td>
+                                <td>SKU002</td>
+                                <td>
+                                    <div class="product-img">
+                                        <i class="bi bi-image text-success"></i>
+                                    </div>
+                                </td>
+                                <td>MOD-3050</td>
+                                <td>Monitor 24" Full HD 144Hz</td>
+                                <td>Samsung</td>
+                                <td>Monitores</td>
+                                <td><span class="badge bg-warning">8</span></td>
+                                <td><span class="img-available">Sí</span></td>
+                            </tr>
+                            <!-- Producto 3 -->
+                            <tr>
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input product-checkbox" type="checkbox">
+                                    </div>
+                                </td>
+                                <td>SKU003</td>
+                                <td>
+                                    <div class="product-img">
+                                        <i class="bi bi-image text-success"></i>
+                                    </div>
+                                </td>
+                                <td>MOD-4090</td>
+                                <td>Tarjeta Gráfica RTX 4090</td>
+                                <td>NVIDIA</td>
+                                <td>Componentes</td>
+                                <td><span class="badge bg-danger">0</span></td>
+                                <td><span class="img-available">Sí</span></td>
+                            </tr>
+                            <!-- Producto 4 -->
+                            <tr>
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input product-checkbox" type="checkbox" checked>
+                                    </div>
+                                </td>
+                                <td>SKU004</td>
+                                <td>
+                                    <div class="product-img">
+                                        <i class="bi bi-x-circle text-danger"></i>
+                                    </div>
+                                </td>
+                                <td>MOD-5500</td>
+                                <td>SSD 1TB NVMe M.2</td>
+                                <td>Kingston</td>
+                                <td>Almacenamiento</td>
+                                <td><span class="badge bg-success">25</span></td>
+                                <td><span class="img-not-available">No</span></td>
+                            </tr>
+                            <!-- Producto 5 -->
+                            <tr>
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input product-checkbox" type="checkbox">
+                                    </div>
+                                </td>
+                                <td>SKU005</td>
+                                <td>
+                                    <div class="product-img">
+                                        <i class="bi bi-image text-success"></i>
+                                    </div>
+                                </td>
+                                <td>MOD-7700</td>
+                                <td>Procesador AMD Ryzen 9 7950X</td>
+                                <td>AMD</td>
+                                <td>Componentes</td>
+                                <td><span class="badge bg-success">15</span></td>
+                                <td><span class="img-available">Sí</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botón de sincronización -->
+        <div class="action-buttons">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="me-3">Productos seleccionados: <strong id="selectedCount">2</strong></span>
+                    <span>Total encontrados: <strong>5</strong></span>
+                </div>
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#syncModal">
+                    <i class="bi bi-cloud-arrow-down me-1"></i>Sincronizar Seleccionados
+                </button>
+            </div>
+        </div>
+
+        <!-- Área de Logs -->
+        <div class="card mt-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Historial de Sincronización</h5>
+                <div>
+                    <button class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-arrow-clockwise me-1"></i>Actualizar
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="logs-container">
+                    <div class="log-entry log-success">
+                        <span class="log-timestamp">12:45:23</span>
+                        <i class="bi bi-check-circle-fill text-success me-1"></i>
+                        Sincronización exitosa: Teclado Mecánico Gaming RGB (SKU001)
+                    </div>
+                    <div class="log-entry log-success">
+                        <span class="log-timestamp">12:45:21</span>
+                        <i class="bi bi-check-circle-fill text-success me-1"></i>
+                        Sincronización exitosa: SSD 1TB NVMe M.2 (SKU004)
+                    </div>
+                    <div class="log-entry log-error">
+                        <span class="log-timestamp">11:30:15</span>
+                        <i class="bi bi-exclamation-circle-fill text-danger me-1"></i>
+                        Error: No se pudo sincronizar Monitor 24" Full HD (SKU002) - Sin existencias
+                    </div>
+                    <div class="log-entry log-success">
+                        <span class="log-timestamp">10:22:47</span>
+                        <i class="bi bi-check-circle-fill text-success me-1"></i>
+                        Sincronización exitosa: Tarjeta Gráfica RTX 4090 (SKU003)
+                    </div>
+                    <div class="log-entry log-error">
+                        <span class="log-timestamp">09:15:33</span>
+                        <i class="bi bi-exclamation-circle-fill text-danger me-1"></i>
+                        Error: Procesador AMD Ryzen 9 no encontrado (SKU005)
+                    </div>
+                    <div class="log-entry log-success">
+                        <span class="log-timestamp">08:45:12</span>
+                        <i class="bi bi-check-circle-fill text-success me-1"></i>
+                        Sincronización completada: 15 productos actualizados
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de confirmación -->
+    <div class="modal fade" id="syncModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar Sincronización</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de sincronizar los <strong id="syncCount">2</strong> productos seleccionados?</p>
+                    <div class="alert alert-warning mt-3">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        Esta acción actualizará los productos en tu catálogo y no se puede deshacer.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" id="confirmSync">Sincronizar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer mt-auto py-3">
+        <div class="container text-center">
+            &copy; 2025 SyscomSync - Sincronización de Catálogo
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Cambiador de tema
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeDropdown = document.getElementById('themeDropdown');
+            themeDropdown.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                
+                // Actualizar icono
+                const icon = themeDropdown.querySelector('i');
+                icon.className = newTheme === 'dark' ? 'bi bi-moon-stars' : 'bi bi-sun';
+            });
+            
+            // Manejar selección de productos
+            const masterCheckbox = document.getElementById('masterCheckbox');
+            const productCheckboxes = document.querySelectorAll('.product-checkbox');
+            const selectAllBtn = document.getElementById('selectAllBtn');
+            const deselectAllBtn = document.getElementById('deselectAllBtn');
+            const selectedCount = document.getElementById('selectedCount');
+            const syncCount = document.getElementById('syncCount');
+            
+            function updateSelectedCount() {
+                const selected = document.querySelectorAll('.product-checkbox:checked').length;
+                selectedCount.textContent = selected;
+                syncCount.textContent = selected;
+            }
+            
+            // Seleccionar/deseleccionar todos
+            masterCheckbox.addEventListener('change', () => {
+                productCheckboxes.forEach(checkbox => {
+                    checkbox.checked = masterCheckbox.checked;
+                });
+                updateSelectedCount();
+            });
+            
+            selectAllBtn.addEventListener('click', () => {
+                productCheckboxes.forEach(checkbox => {
+                    checkbox.checked = true;
+                });
+                masterCheckbox.checked = true;
+                updateSelectedCount();
+            });
+            
+            deselectAllBtn.addEventListener('click', () => {
+                productCheckboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                masterCheckbox.checked = false;
+                updateSelectedCount();
+            });
+            
+            // Actualizar contador cuando cambian las selecciones individuales
+            productCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', () => {
+                    // Verificar si todos están seleccionados
+                    const allChecked = [...productCheckboxes].every(cb => cb.checked);
+                    masterCheckbox.checked = allChecked;
+                    updateSelectedCount();
+                });
+            });
+            
+            // Inicializar contador
+            updateSelectedCount();
+            
+            // Simular búsqueda
+            document.getElementById('searchButton').addEventListener('click', () => {
+                // Simular carga
+                const searchBtn = document.getElementById('searchButton');
+                const originalText = searchBtn.innerHTML;
+                searchBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Buscando...';
+                searchBtn.disabled = true;
+                
+                setTimeout(() => {
+                    searchBtn.innerHTML = originalText;
+                    searchBtn.disabled = false;
+                    
+                    // Mostrar mensaje de éxito
+                    const toast = document.createElement('div');
+                    toast.className = 'position-fixed bottom-0 end-0 p-3';
+                    toast.style.zIndex = '11';
+                    toast.innerHTML = `
+                        <div class="toast show" role="alert">
+                            <div class="toast-header bg-success text-white">
+                                <strong class="me-auto">Búsqueda completada</strong>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                            </div>
+                            <div class="toast-body">
+                                Se encontraron 5 productos que coinciden con tu búsqueda.
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(toast);
+                    
+                    // Eliminar después de 3 segundos
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 3000);
+                }, 1500);
+            });
+            
+            // Confirmar sincronización
+            document.getElementById('confirmSync').addEventListener('click', () => {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('syncModal'));
+                modal.hide();
+                
+                // Simular sincronización
+                const syncBtn = document.getElementById('confirmSync');
+                const originalText = syncBtn.innerHTML;
+                syncBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Sincronizando...';
+                syncBtn.disabled = true;
+                
+                setTimeout(() => {
+                    syncBtn.innerHTML = originalText;
+                    syncBtn.disabled = false;
+                    
+                    // Mostrar mensaje de éxito
+                    const toast = document.createElement('div');
+                    toast.className = 'position-fixed bottom-0 end-0 p-3';
+                    toast.style.zIndex = '11';
+                    toast.innerHTML = `
+                        <div class="toast show" role="alert">
+                            <div class="toast-header bg-success text-white">
+                                <strong class="me-auto">Sincronización exitosa</strong>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+                            </div>
+                            <div class="toast-body">
+                                Los productos seleccionados se han sincronizado correctamente.
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(toast);
+                    
+                    // Eliminar después de 3 segundos
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 3000);
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>

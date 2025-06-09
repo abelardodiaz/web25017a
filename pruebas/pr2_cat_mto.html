@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mantenimiento de Catálogo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root[data-theme="light"] {
+            --bg-primary: #fff;
+            --text-primary: #1a1a1a;
+            --accent-color: #0d6efd;
+            --hover-bg: #f8f9fa;
+            --border-color: #dee2e6;
+            --bg-secondary: #ddd;
+            --card-bg: #fff;
+            --table-header-bg: #f1f1f1;
+        }
+
+        :root[data-theme="dark"]{
+            --bg-primary: #1a1a1a;
+            --text-primary: #fff;
+            --accent-color: #0d6efd;
+            --hover-bg: #2d2d2d;
+            --border-color: #444444;
+            --bg-secondary: #333;
+            --card-bg: #2d2d2d;
+            --table-header-bg: #343a40;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .header-section {
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.5rem 0;
+            margin-bottom: 1.5rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-control,
+        .form-select {
+            background-color: var(--bg-primary); 
+            color: var(--text-primary); 
+            border: 1px solid var(--border-color); 
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background-color: var(--bg-primary); 
+            color: var(--text-primary); 
+            border-color: var(--accent-color); 
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25); 
+        }
+
+        .form-control::placeholder {
+            color: var(--text-primary);
+            opacity: 0.7; 
+        }
+
+        .table {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .table thead th {
+            background-color: var(--table-header-bg);
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .table th,
+        .table td {
+            border-color: var(--border-color);
+            vertical-align: middle;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: var(--hover-bg);
+        }
+
+        .actions-cell {
+            min-width: 140px;
+        }
+
+        .badge-stock {
+            padding: 0.5em 0.8em;
+            border-radius: 10px;
+        }
+
+        .badge-stock.low {
+            background-color: #dc3545;
+        }
+
+        .badge-stock.medium {
+            background-color: #ffc107;
+            color: #212529;
+        }
+
+        .badge-stock.high {
+            background-color: #198754;
+        }
+
+        .filter-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .image-thumbnail {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+        }
+
+        .image-card {
+            position: relative;
+            transition: transform 0.2s;
+        }
+
+        .image-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .image-delete-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .image-order-input {
+            width: 60px;
+        }
+
+        .preview-container {
+            border: 1px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 15px;
+            background-color: var(--bg-primary);
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 180px;
+            display: none;
+        }
+
+        .switch-custom .form-check-input:checked {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-footer {
+            border-top: 1px solid var(--border-color);
+        }
+
+        .alert-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+            min-width: 300px;
+        }
+
+        .visibility-badge {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .visibility-badge.visible {
+            background-color: #198754;
+        }
+
+        .visibility-badge.hidden {
+            background-color: #dc3545;
+        }
+
+        .btn-action {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 2px;
+        }
+
+        .theme-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 768px) {
+            .table-responsive {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .table thead {
+                display: none;
+            }
+            
+            .table, .table tbody, .table tr, .table td {
+                display: block;
+                width: 100%;
+            }
+            
+            .table tr {
+                margin-bottom: 15px;
+                border: 1px solid var(--border-color);
+                border-radius: 5px;
+            }
+            
+            .table td {
+                text-align: right;
+                padding-left: 50%;
+                position: relative;
+                border-bottom: 1px solid var(--border-color);
+            }
+            
+            .table td:last-child {
+                border-bottom: none;
+            }
+            
+            .table td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 10px;
+                width: calc(50% - 20px);
+                padding-right: 10px;
+                text-align: left;
+                font-weight: bold;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Encabezado -->
+    <div class="header-section">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-1">Mantenimiento de Catálogo</h1>
+                    <p class="mb-0">Edita productos y gestiona imágenes</p>
+                </div>
+                <div>
+                    <span class="badge bg-secondary">Vista exclusiva para administradores</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mb-5">
+        <!-- Barra de Filtros -->
+        <div class="filter-card">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control" placeholder="Buscar por nombre...">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select">
+                        <option value="" selected>Todas las marcas</option>
+                        <option>Sony</option>
+                        <option>Samsung</option>
+                        <option>LG</option>
+                        <option>Apple</option>
+                        <option>Xiaomi</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select">
+                        <option value="" selected>Todas las categorías</option>
+                        <option>Electrónica</option>
+                        <option>Hogar</option>
+                        <option>Informática</option>
+                        <option>Audio</option>
+                        <option>Video</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary w-100">
+                        <i class="bi bi-funnel me-1"></i> Buscar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de Productos -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Productos Sincronizados</h5>
+                <span class="badge bg-primary">12 productos</span>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Modelo</th>
+                                <th>Título</th>
+                                <th>Marca</th>
+                                <th>Categoría</th>
+                                <th>Existencias</th>
+                                <th>Precio</th>
+                                <th>Margen</th>
+                                <th>Descuento</th>
+                                <th>Visible</th>
+                                <th>Imágenes</th>
+                                <th class="actions-cell">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Producto 1 -->
+                            <tr>
+                                <td>P-1001</td>
+                                <td>XZ-300</td>
+                                <td>Televisor LED 55" 4K Ultra HD</td>
+                                <td>Sony</td>
+                                <td>Electrónica</td>
+                                <td>
+                                    <span class="badge badge-stock high">25</span>
+                                </td>
+                                <td>$12,499</td>
+                                <td>25%</td>
+                                <td>10%</td>
+                                <td>
+                                    <div class="form-check form-switch switch-custom">
+                                        <input class="form-check-input" type="checkbox" checked>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">Sí</span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary btn-action" data-bs-toggle="modal" data-bs-target="#editModal">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-action" data-bs-toggle="modal" data-bs-target="#imagesModal">
+                                        <i class="bi bi-images"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-action">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            
+                            <!-- Producto 2 -->
+                            <tr>
+                                <td>P-1002</td>
+                                <td>Galaxy S23</td>
+                                <td>Smartphone Android 128GB</td>
+                                <td>Samsung</td>
+                                <td>Telefonía</td>
+                                <td>
+                                    <span class="badge badge-stock medium">8</span>
+                                </td>
+                                <td>$18,999</td>
+                                <td>30%</td>
+                                <td>5%</td>
+                                <td>
+                                    <div class="form-check form-switch switch-custom">
+                                        <input class="form-check-input" type="checkbox" checked>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success">Sí</span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary btn-action">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-action">
+                                        <i class="bi bi-images"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-action">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            
+                            <!-- Producto 3 -->
+                            <tr>
+                                <td>P-1003</td>
+                                <td>WH-1000XM5</td>
+                                <td>Audífonos inalámbricos con cancelación de ruido</td>
+                                <td>Sony</td>
+                                <td>Audio</td>
+                                <td>
+                                    <span class="badge badge-stock low">2</span>
+                                </td>
+                                <td>$5,299</td>
+                                <td>22%</td>
+                                <td>15%</td>
+                                <td>
+                                    <div class="form-check form-switch switch-custom">
+                                        <input class="form-check-input" type="checkbox">
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-danger">No</span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary btn-action">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </button>
+                                    <button class="btn btn-info btn-action">
+                                        <i class="bi bi-images"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-action">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Paginación -->
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">Anterior</a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Siguiente</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Edición de Datos -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Producto: Televisor LED 55" 4K Ultra HD</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editProductForm">
+                        <div class="mb-3">
+                            <label class="form-label">Visibilidad</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="visibilitySwitch" checked>
+                                <label class="form-check-label" for="visibilitySwitch">Producto visible en catálogo</label>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Precio Público ($)</label>
+                                <input type="number" class="form-control" value="12499" min="0" step="0.01">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Margen (%)</label>
+                                <input type="number" class="form-control" value="25" min="0" max="100" step="0.1">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Descuento (%)</label>
+                            <input type="number" class="form-control" value="10" min="0" max="100" step="1">
+                            <div class="form-text">Descuento promocional aplicado al precio público</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Precio Final Calculado</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="text" class="form-control bg-light" value="10,124.10" readonly>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Gestión de Imágenes -->
+    <div class="modal fade" id="imagesModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Imágenes del Producto: Televisor LED 55" 4K Ultra HD</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        Cambiar el orden de las imágenes afectará cómo se muestran en el catálogo.
+                    </div>
+                    
+                    <h6 class="mt-4 mb-3">Imágenes Existentes</h6>
+                    <div class="row g-3" id="existingImages">
+                        <!-- Imagen 1 -->
+                        <div class="col-md-4">
+                            <div class="card image-card">
+                                <img src="https://via.placeholder.com/300x200?text=TV+Frontal" class="image-thumbnail card-img-top">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <label class="form-label">Orden:</label>
+                                        <input type="number" class="form-control image-order-input" value="1" min="1">
+                                    </div>
+                                    <button class="btn btn-sm btn-danger w-100">
+                                        <i class="bi bi-trash me-1"></i> Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Imagen 2 -->
+                        <div class="col-md-4">
+                            <div class="card image-card">
+                                <img src="https://via.placeholder.com/300x200?text=TV+Lateral" class="image-thumbnail card-img-top">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <label class="form-label">Orden:</label>
+                                        <input type="number" class="form-control image-order-input" value="2" min="1">
+                                    </div>
+                                    <button class="btn btn-sm btn-danger w-100">
+                                        <i class="bi bi-trash me-1"></i> Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Imagen 3 -->
+                        <div class="col-md-4">
+                            <div class="card image-card">
+                                <img src="https://via.placeholder.com/300x200?text=TV+Trasera" class="image-thumbnail card-img-top">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <label class="form-label">Orden:</label>
+                                        <input type="number" class="form-control image-order-input" value="3" min="1">
+                                    </div>
+                                    <button class="btn btn-sm btn-danger w-100">
+                                        <i class="bi bi-trash me-1"></i> Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <h6 class="mb-3">Agregar Nueva Imagen</h6>
+                    <ul class="nav nav-tabs mb-3" id="imageTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="url-tab" data-bs-toggle="tab" data-bs-target="#url" type="button" role="tab">URL de Imagen</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="upload-tab" data-bs-toggle="tab" data-bs-target="#upload" type="button" role="tab">Subir Archivo</button>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content" id="imageTabContent">
+                        <div class="tab-pane fade show active" id="url" role="tabpanel">
+                            <div class="mb-3">
+                                <label class="form-label">URL de la imagen</label>
+                                <input type="url" class="form-control" placeholder="https://ejemplo.com/imagen.jpg">
+                                <div class="invalid-feedback">Por favor, ingresa una URL válida que comience con http:// o https://</div>
+                            </div>
+                        </div>
+                        
+                        <div class="tab-pane fade" id="upload" role="tabpanel">
+                            <div class="mb-3">
+                                <label class="form-label">Seleccionar archivo</label>
+                                <input class="form-control" type="file" accept="image/jpeg,image/png">
+                                <div class="form-text">Formatos permitidos: JPG, PNG. Tamaño máximo: 2MB</div>
+                                <div class="invalid-feedback">El archivo debe ser una imagen JPG o PNG menor a 2MB</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="preview-container">
+                        <img id="imagePreview" class="preview-image" alt="Vista previa">
+                        <span class="text-muted" id="previewText">Vista previa de la imagen aparecerá aquí</span>
+                    </div>
+                    
+                    <div class="alert alert-info mt-3">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Las imágenes agregadas reemplazarán las existentes si se excede el límite permitido.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón de Cambio de Tema -->
+    <button id="themeDropdown" class="btn btn-primary theme-btn">
+        <i class="bi bi-moon-stars"></i>
+    </button>
+
+    <!-- Contenedor de Alertas -->
+    <div class="alert-container">
+        <!-- Las alertas se mostrarán aquí dinámicamente -->
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Cambio de tema
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeBtn = document.getElementById('themeDropdown');
+            const themeIcon = themeBtn.querySelector('i');
+            
+            // Cargar tema guardado
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            
+            // Actualizar icono según tema
+            if (savedTheme === 'dark') {
+                themeIcon.classList.remove('bi-sun');
+                themeIcon.classList.add('bi-moon-stars');
+            } else {
+                themeIcon.classList.remove('bi-moon-stars');
+                themeIcon.classList.add('bi-sun');
+            }
+            
+            // Evento para cambiar tema
+            themeBtn.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                
+                if (newTheme === 'dark') {
+                    themeIcon.classList.remove('bi-sun');
+                    themeIcon.classList.add('bi-moon-stars');
+                } else {
+                    themeIcon.classList.remove('bi-moon-stars');
+                    themeIcon.classList.add('bi-sun');
+                }
+                
+                showAlert(`Tema cambiado a ${newTheme === 'dark' ? 'oscuro' : 'claro'}`, 'success');
+            });
+            
+            // Vista previa de imagen
+            const imageInput = document.querySelector('input[type="url"], input[type="file"]');
+            const imagePreview = document.getElementById('imagePreview');
+            const previewText = document.getElementById('previewText');
+            
+            function updateImagePreview() {
+                const urlInput = document.querySelector('#url input');
+                const fileInput = document.querySelector('#upload input[type="file"]');
+                
+                if (urlInput.value && urlInput.checkValidity()) {
+                    imagePreview.src = urlInput.value;
+                    imagePreview.style.display = 'block';
+                    previewText.style.display = 'none';
+                } else if (fileInput.files && fileInput.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                        previewText.style.display = 'none';
+                    }
+                    reader.readAsDataURL(fileInput.files[0]);
+                } else {
+                    imagePreview.style.display = 'none';
+                    previewText.style.display = 'block';
+                }
+            }
+            
+            // Eventos para inputs de imagen
+            document.querySelector('#url input').addEventListener('input', updateImagePreview);
+            document.querySelector('#upload input[type="file"]').addEventListener('change', updateImagePreview);
+            
+            // Cambiar entre pestañas de imagen
+            document.querySelectorAll('#imageTab button').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    setTimeout(updateImagePreview, 100);
+                });
+            });
+            
+            // Función para mostrar alertas
+            function showAlert(message, type) {
+                const alertContainer = document.querySelector('.alert-container');
+                const alertId = 'alert-' + Date.now();
+                
+                const alert = document.createElement('div');
+                alert.className = `alert alert-${type} alert-dismissible fade show`;
+                alert.role = 'alert';
+                alert.innerHTML = `
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                `;
+                
+                alertContainer.appendChild(alert);
+                
+                // Eliminar alerta después de 5 segundos
+                setTimeout(() => {
+                    alert.classList.remove('show');
+                    setTimeout(() => {
+                        alert.remove();
+                    }, 300);
+                }, 5000);
+            }
+            
+            // Evento de ejemplo para eliminar producto
+            document.querySelectorAll('.btn-outline-danger').forEach(button => {
+                button.addEventListener('click', function() {
+                    if (confirm('¿Estás seguro de eliminar este producto? Esta acción no se puede deshacer.')) {
+                        const row = this.closest('tr');
+                        row.classList.add('table-danger');
+                        setTimeout(() => {
+                            row.style.opacity = '0.5';
+                        }, 300);
+                        
+                        showAlert('Producto eliminado correctamente', 'success');
+                    }
+                });
+            });
+            
+            // Evento de ejemplo para eliminar imagen
+            document.querySelectorAll('.image-card .btn-danger').forEach(button => {
+                button.addEventListener('click', function() {
+                    if (confirm('¿Estás seguro de eliminar esta imagen?')) {
+                        const card = this.closest('.image-card');
+                        card.classList.add('border-danger');
+                        this.innerHTML = '<i class="bi bi-trash me-1"></i> Eliminando...';
+                        this.disabled = true;
+                        
+                        setTimeout(() => {
+                            card.remove();
+                            showAlert('Imagen eliminada correctamente', 'success');
+                        }, 1000);
+                    }
+                });
+            });
+            
+            // Ejemplo de alerta de guardado exitoso
+            setTimeout(() => {
+                showAlert('Cambios guardados correctamente', 'success');
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

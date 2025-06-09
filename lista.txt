@@ -1,0 +1,23 @@
+.env
+.env.example
+.gitattributes
+.gitignore
+0001roadmap.md
+0002roadmap.md
+app
+config.py
+config.py.template.py
+estructura.txt
+full_app.zip
+full_app_v0.0.2.zip
+lista.txt
+MySQL Database Setup Instructions.markdown
+privada
+python_venv_notes.markdown
+README.md
+requirements.txt
+requirements2.txt
+test.py
+web25017B
+wsgi.py
+__pycache__

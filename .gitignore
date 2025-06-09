@@ -22,7 +22,7 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-*markdown
+*.markdown
 # Archivos temporales
 *.tmp
 *.bak

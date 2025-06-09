@@ -1,23 +1,7 @@
+<!-- app/templates/panel.html -->
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="card">
-        <div class="card-header bg-primary text-white">
-            <h3 class="mb-0">Panel de Control</h3>
-        </div>
-        
-        <div class="card-body">
-            <div class="alert alert-info">
-                Bienvenido <strong>{{ session.user_id }}</strong> | Rol: {{ session.user_role }}
-            </div>
-            
-            <h5>Acciones Disponibles:</h5>
-            <ul class="list-group">
-                <li class="list-group-item">Gestión de Usuarios (Próximamente)</li>
-                <li class="list-group-item">Configuración del Sistema (Próximamente)</li>
-            </ul>
-        </div>
-    </div>
-</div>
+
+
 {% endblock %}

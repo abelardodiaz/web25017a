@@ -1,0 +1,101 @@
+{# app/templates/cat/cat_sinc.html #}
+{% extends "base.html" %}
+{% block title %}Sincronizar Catálogo{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <h2 class="mb-3">Sincronización de Catálogo</h2>
+  <p class="text-muted">Busca un producto por ID en Syscom y sincronízalo en tu base de datos.</p>
+
+  {# Mensajes de flash #}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, msg in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ msg }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  {# 1) Formulario de búsqueda por ID #}
+  <form method="get" action="{{ url_for('catalogo.sincronizar') }}" class="row g-2 align-items-end mb-4">
+    <div class="col-auto">
+      <label for="id_buscar" class="form-label">ID Syscom:</label>
+      <input
+        type="text"
+        class="form-control"
+        id="id_buscar"
+        name="id_buscar"
+        placeholder="Ej. 12345"
+        value="{{ request.args.get('id_buscar', '') }}"
+        required
+      >
+    </div>
+    <div class="col-auto">
+      <button type="submit" class="btn btn-primary">Buscar Producto</button>
+    </div>
+  </form>
+
+  {# 2) Mostrar error si hubo #}
+  {% if error %}
+    <div class="alert alert-danger">{{ error }}</div>
+  {% endif %}
+
+  {# 3) Si encontramos un producto, mostrar la tabla con checkbox #}
+  {% if producto %}
+    <form method="post" action="{{ url_for('catalogo.sincronizar') }}">
+      <!-- Campo oculto para el token CSRF -->
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      
+      <table class="table table-bordered align-middle">
+        <thead class="table-light">
+          <tr>
+            <th scope="col" style="width: 60px;">Sel.</th>
+            <th scope="col">ID</th>
+            <th scope="col">Modelo</th>
+            <th scope="col">Título</th>
+            <th scope="col">Marca</th>
+            <th scope="col">Categorías</th>
+            <th scope="col">Existencia</th>
+            <th scope="col">Imagen</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-center">
+              {# Por defecto, checked #}
+              <input
+                type="checkbox"
+                name="seleccion"
+                value="{{ producto.id }}"
+                checked
+              >
+            </td>
+            <td>{{ producto.id }}</td>
+            <td>{{ producto.modelo }}</td>
+            <td>{{ producto.titulo }}</td>
+            <td>{{ producto.marca }}</td>
+            <td>{{ producto.categorias | join(', ') }}</td>
+            <td>{{ producto.existencia }}</td>
+            <td>
+              {% if producto.imagen %}
+                <img src="{{ producto.imagen }}" alt="Portada" style="max-height: 50px;">
+              {% else %}
+                —
+              {% endif %}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="d-flex justify-content-end">
+        <button type="submit" class="btn btn-success">
+          <i class="bi bi-arrow-repeat"></i> Sincronizar Seleccionados
+        </button>
+      </div>
+    </form>
+  {% endif %}
+</div>
+{% endblock %}

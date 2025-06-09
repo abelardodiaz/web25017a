@@ -1,0 +1,14 @@
+<!-- app/templates/panel_credenciales_form.html -->
+{% extends "base.html" %}
+{% block title %}Nueva Credencial Syscom{% endblock %}
+
+{% block content %}
+<h3>Nueva Credencial</h3>
+<form method="post">
+  {{ form.hidden_tag() }}
+  <div class="mb-3">{{ form.client_id.label }} {{ form.client_id(class="form-control") }}</div>
+  <div class="mb-3">{{ form.client_secret.label }} {{ form.client_secret(class="form-control") }}</div>
+  <button class="btn btn-primary">Guardar</button>
+</form>
+{% endblock %}
+  

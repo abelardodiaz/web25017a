@@ -1,0 +1,335 @@
+<!-- app/templates/cat/cat_alta.html -->
+{% extends "base.html" %}
+{% block title %}Catalogo Sincronizar{% endblock %}
+
+{% block content %}
+<!-- Contenido principal -->
+    <main class="container mt-4 mb-5">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h1 class="mb-0">Alta Manual de Productos</h1>
+                        <p class="text-muted">Añade productos manualmente o por carga masiva</p>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-info">
+                            <i class="bi bi-shield-lock me-1"></i>Vista exclusiva para administradores
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Pestañas -->
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="individual-tab" data-bs-toggle="tab" data-bs-target="#individual" type="button" role="tab">
+                            <i class="bi bi-plus-lg me-1"></i>Alta Individual
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="mass-tab" data-bs-toggle="tab" data-bs-target="#mass" type="button" role="tab">
+                            <i class="bi bi-file-earmark-spreadsheet me-1"></i>Carga Masiva
+                        </button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content" id="myTabContent">
+                    <!-- Pestaña de Alta Individual -->
+                    <div class="tab-pane fade show active" id="individual" role="tabpanel">
+                        <form id="productForm">
+                            <!-- Información básica -->
+                            <div class="card mb-4">
+                                <div class="card-header bg-transparent">
+                                    <h5 class="mb-0"><i class="bi bi-info-circle me-2"></i>Información básica</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="modelo" class="form-label required">Modelo</label>
+                                            <input type="text" class="form-control" id="modelo" required>
+                                            <div class="invalid-feedback">Por favor ingresa el modelo del producto.</div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="titulo" class="form-label required">Título</label>
+                                            <input type="text" class="form-control" id="titulo" required>
+                                            <div class="invalid-feedback">Por favor ingresa un título para el producto.</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="descripcion" class="form-label required">Descripción</label>
+                                        <textarea class="form-control" id="descripcion" rows="4" required></textarea>
+                                        <div class="invalid-feedback">Por favor ingresa una descripción del producto.</div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="marca" class="form-label required">Marca</label>
+                                            <select class="form-select" id="marca" required>
+                                                <option value="">Selecciona una marca</option>
+                                                <option value="1">Apple</option>
+                                                <option value="2">Samsung</option>
+                                                <option value="3">Sony</option>
+                                                <option value="4">HP</option>
+                                                <option value="5">Dell</option>
+                                            </select>
+                                            <div class="invalid-feedback">Por favor selecciona una marca.</div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="categoria" class="form-label required">Categoría</label>
+                                            <select class="form-select" id="categoria" required>
+                                                <option value="">Selecciona una categoría</option>
+                                                <option value="1">Electrónicos</option>
+                                                <option value="2">Computadoras</option>
+                                                <option value="3">Móviles</option>
+                                                <option value="4">Accesorios</option>
+                                                <option value="5">Audio</option>
+                                            </select>
+                                            <div class="invalid-feedback">Por favor selecciona una categoría.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Precios e inventario -->
+                            <div class="card mb-4">
+                                <div class="card-header bg-transparent">
+                                    <h5 class="mb-0"><i class="bi bi-tag me-2"></i>Precios e Inventario</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-3 mb-3">
+                                            <label for="existencias" class="form-label required">Existencias</label>
+                                            <input type="number" class="form-control" id="existencias" min="0" required>
+                                            <div class="invalid-feedback">Las existencias deben ser un número positivo.</div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label for="precio" class="form-label required">Precio Público</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">$</span>
+                                                <input type="number" class="form-control" id="precio" min="0" step="0.01" required>
+                                            </div>
+                                            <div class="invalid-feedback">El precio debe ser un valor positivo.</div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label for="margen" class="form-label">Margen (%)</label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="margen" min="0" max="100" step="0.1">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label for="descuento" class="form-label">Descuento (%)</label>
+                                            <div class="input-group">
+                                                <input type="number" class="form-control" id="descuento" min="0" max="100" step="0.1">
+                                                <span class="input-group-text">%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="visibilidad" checked>
+                                                <label class="form-check-label" for="visibilidad">Visibilidad en catálogo</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="estado" class="form-label">Estado</label>
+                                            <select class="form-select" id="estado">
+                                                <option value="completo">Completo</option>
+                                                <option value="borrador">Borrador</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Gestión de imágenes -->
+                            <div class="card mb-4">
+                                <div class="card-header bg-transparent">
+                                    <h5 class="mb-0"><i class="bi bi-images me-2"></i>Imágenes del Producto</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-4">
+                                        <label class="form-label">Agregar imágenes</label>
+                                        <div class="row">
+                                            <div class="col-md-8 mb-3">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" id="imageUrl" placeholder="https://ejemplo.com/imagen.jpg">
+                                                    <button class="btn btn-outline-primary" type="button" id="addUrlBtn">
+                                                        <i class="bi bi-link-45deg"></i> Agregar URL
+                                                    </button>
+                                                </div>
+                                                <div class="form-text">Formatos soportados: JPG, PNG. Tamaño máximo: 2MB</div>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <button class="btn btn-primary w-100" type="button" id="uploadBtn">
+                                                    <i class="bi bi-upload me-1"></i>Subir desde dispositivo
+                                                </button>
+                                                <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="image-preview d-flex align-items-center justify-content-center p-3 mb-3" id="imagePreview">
+                                            <div class="text-center">
+                                                <i class="bi bi-card-image display-4 mb-2"></i>
+                                                <p class="mb-0">Arrastra imágenes aquí o usa los botones de arriba</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Imágenes seleccionadas</label>
+                                        <div class="alert alert-info">
+                                            <i class="bi bi-info-circle me-2"></i>Arrastra las imágenes para reordenarlas. La primera será la imagen principal.
+                                        </div>
+                                        <div id="imageList" class="row g-3">
+                                            <!-- Las imágenes se añadirán aquí dinámicamente -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Botones de acción -->
+                            <div class="d-flex justify-content-between">
+                                <button type="button" class="btn btn-outline-secondary">
+                                    <i class="bi bi-x-circle me-1"></i>Cancelar
+                                </button>
+                                <div>
+                                    <button type="button" class="btn btn-warning me-2" id="saveDraftBtn">
+                                        <i class="bi bi-save me-1"></i>Guardar como borrador
+                                    </button>
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="bi bi-check-circle me-1"></i>Guardar producto
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Pestaña de Carga Masiva -->
+                    <div class="tab-pane fade" id="mass" role="tabpanel">
+                        <div class="card mb-4">
+                            <div class="card-header bg-transparent">
+                                <h5 class="mb-0"><i class="bi bi-file-earmark-spreadsheet me-2"></i>Carga Masiva desde Archivo</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-4">
+                                    <div class="file-drop-area" id="dropArea">
+                                        <div class="mb-3">
+                                            <i class="bi bi-cloud-arrow-up display-4"></i>
+                                        </div>
+                                        <h5>Arrastra tu archivo aquí</h5>
+                                        <p class="text-muted">o</p>
+                                        <button class="btn btn-primary mb-3" id="selectFileBtn">
+                                            <i class="bi bi-folder2-open me-1"></i>Seleccionar archivo
+                                        </button>
+                                        <p class="small mb-0">Formatos soportados: .csv, .xlsx, .xls</p>
+                                        <input type="file" id="massFileInput" accept=".csv, .xlsx, .xls" style="display: none;">
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <h5><i class="bi bi-info-circle me-2"></i>Requisitos del archivo</h5>
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <ul>
+                                                <li>El archivo debe contener las siguientes columnas: <code>Modelo, Título, Descripción, Marca, Categoría, Existencias, Precio, Margen, Descuento, Visibilidad, Estado</code></li>
+                                                <li>Las primeras filas pueden ser ignoradas si contienen encabezados</li>
+                                                <li>Formato de fechas: DD/MM/AAAA</li>
+                                                <li>Los valores numéricos deben usar punto como separador decimal</li>
+                                                <li>Tamaño máximo del archivo: 10MB</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="saveAsDraft" checked>
+                                        <label class="form-check-label" for="saveAsDraft">
+                                            Guardar productos como borradores si faltan datos obligatorios
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="d-flex justify-content-end">
+                                        <button type="button" class="btn btn-warning" id="processFileBtn">
+                                            <i class="bi bi-gear me-1"></i>Procesar archivo
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header bg-transparent">
+                                <h5 class="mb-0"><i class="bi bi-list-check me-2"></i>Resultados de la Carga</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle me-2"></i>Sube un archivo para ver los resultados del procesamiento.
+                                </div>
+                                
+                                <div class="progress mb-3" style="height: 25px; display: none;" id="progressBar">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%">0%</div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-md-3">
+                                        <div class="card border-success">
+                                            <div class="card-body text-center">
+                                                <h5 class="card-title text-success">Correctos</h5>
+                                                <h3 class="mb-0">0</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card border-warning">
+                                            <div class="card-body text-center">
+                                                <h5 class="card-title text-warning">Borradores</h5>
+                                                <h3 class="mb-0">0</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card border-danger">
+                                            <div class="card-body text-center">
+                                                <h5 class="card-title text-danger">Errores</h5>
+                                                <h3 class="mb-0">0</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card border-info">
+                                            <div class="card-body text-center">
+                                                <h5 class="card-title text-info">Total</h5>
+                                                <h3 class="mb-0">0</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-end mt-3">
+                                    <button type="button" class="btn btn-success" disabled id="confirmUploadBtn">
+                                        <i class="bi bi-cloud-upload me-1"></i>Confirmar carga
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Pie de página -->
+    <footer class="footer mt-auto py-3">
+        <div class="container">
+            <div class="text-center">
+                &copy; 2025 Sistema de Catálogo - v1.0
+            </div>
+        </div>
+    </footer>
+{% endblock %}
+<script src="{{ url_for('static', filename='js/cat.js') }}"></script>

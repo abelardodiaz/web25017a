@@ -1,22 +1,46 @@
 /* app/static/css/base.css */
-:root[data-theme="light"] {
-    --bg-primary: #fff;
+
+:root {
+    /* Variables por defecto (tema claro) */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
     --text-primary: #1a1a1a;
     --accent-color: #0d6efd;
-    --hover-bg: #f8f9fa;
+    --hover-bg: #e9ecef;
     --border-color: #dee2e6;
-    --bg-secondary: #ddd;
+    --success: #28a745;
+    --danger: #dc3545;
+    --warning: #ffc107;
+    --info: #17a2b8;
 }
 
-:root[data-theme="dark"]{
+/* Tema oscuro */
+[data-theme="dark"] {
     --bg-primary: #1a1a1a;
-    --text-primary: #fff;
+    --bg-secondary: #2d2d2d;
+    --text-primary: #ffffff;
     --accent-color: #0d6efd;
-    --hover-bg: #2d2d2d;
+    --hover-bg: #3a3a3a;
     --border-color: #444444;
-    --bg-secondary: #333;
+    --success: #28a745;
+    --danger: #dc3545;
+    --warning: #ffc107;
+    --info: #17a2b8;
 }
 
+/* Tema claro explícito */
+[data-theme="light"] {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --text-primary: #1a1a1a;
+    --accent-color: #0d6efd;
+    --hover-bg: #e9ecef;
+    --border-color: #dee2e6;
+    --success: #28a745;
+    --danger: #dc3545;
+    --warning: #ffc107;
+    --info: #17a2b8;
+}
 .card {
     background-color: var(--bg-primary);
     color: var(--text-primary);
@@ -143,4 +167,17 @@ body {
 .footer {
     background-color: var(--bg-secondary); 
 
+}
+
+/* Hacer que los modales hereden el tema */
+.modal-content {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.modal-header,
+.modal-footer {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
 }

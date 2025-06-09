@@ -1,0 +1,17 @@
+C:\Users\abela\Dropbox\WEB\web25-017-catalogo00002\.env
+C:\Users\abela\Dropbox\WEB\web25-017-catalogo00002\.env.example
+C:\Users\abela\Dropbox\WEB\web25-017-catalogo00002\.gitattributes
+C:\Users\abela\Dropbox\WEB\web25-017-catalogo00002\.gitignore
+C:\Users\abela\Dropbox\WEB\web25-017-catalogo00002\app
+C:\Users\abela\Dropbox\WEB\web25-017-catalogo00002\config.py
+C:\Users\abela\Dropbox\WEB\web25-017-catalogo00002\config.py.template.py
+C:\Users\abela\Dropbox\WEB\web25-017-catalogo00002\estructura.txt
+C:\Users\abela\Dropbox\WEB\web25-017-catalogo00002\MySQL Database Setup Instructions.markdown
+C:\Users\abela\Dropbox\WEB\web25-017-catalogo00002\privada
+C:\Users\abela\Dropbox\WEB\web25-017-catalogo00002\python_venv_notes.markdown
+C:\Users\abela\Dropbox\WEB\web25-017-catalogo00002\README.md
+C:\Users\abela\Dropbox\WEB\web25-017-catalogo00002\requirements.txt
+C:\Users\abela\Dropbox\WEB\web25-017-catalogo00002\requirements2.txt
+C:\Users\abela\Dropbox\WEB\web25-017-catalogo00002\web25017a
+C:\Users\abela\Dropbox\WEB\web25-017-catalogo00002\wsgi.py
+

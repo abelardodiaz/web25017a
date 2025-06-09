@@ -1,0 +1,85 @@
+Listado de rutas de carpetas
+El n�mero de serie del volumen es FAC8-6F26
+C:.
+�   .env
+�   .env.example
+�   .gitattributes
+�   .gitignore
+�   0001roadmap.md
+�   0002roadmap.md
+�   config.py
+�   config.py.template.py
+�   estructura.txt
+�   full_app.zip
+�   full_app_v0.0.2.zip
+�   lista.txt
+�   lista_de_archivos.txt
+�   MySQL Database Setup Instructions.markdown
+�   python_venv_notes.markdown
+�   README.md
+�   requirements.txt
+�   requirements2.txt
+�   test.py
+�   wsgi.py
+�   
++---app
+�   �   decorators.py
+�   �   forms.py
+�   �   models.py
+�   �   __init__.py
+�   �   
+�   +---routes
+�   �   �   auth_routes.py
+�   �   �   main_routes.py
+�   �   �   panel_routes.py
+�   �   �   setup_routes.py
+�   �   �   
+�   �   +---__pycache__
+�   �           auth_routes.cpython-312.pyc
+�   �           auth_routes.cpython-313.pyc
+�   �           main_routes.cpython-312.pyc
+�   �           main_routes.cpython-313.pyc
+�   �           panel_routes.cpython-312.pyc
+�   �           panel_routes.cpython-313.pyc
+�   �           setup_routes.cpython-312.pyc
+�   �           setup_routes.cpython-313.pyc
+�   �           
+�   +---static
+�   �   +---css
+�   �   �       base.css
+�   �   �       dark_theme.css
+�   �   �       light_theme.css
+�   �   �       modals.css
+�   �   �       
+�   �   +---js
+�   �           theme-switcher.js
+�   �           
+�   +---templates
+�   �   �   base.html
+�   �   �   index.html
+�   �   �   panel.html
+�   �   �   panel_credenciales_form.html
+�   �   �   panel_credenciales_lista.html
+�   �   �   setup.html
+�   �   �   
+�   �   +---auth
+�   �   �       login.html
+�   �   �       
+�   �   +---modals
+�   �   �       redirect.html
+�   �   �       
+�   �   +---panel
+�   �           dashboard.html
+�   �           
+�   +---utils
+�   �   �   token_obtener_api.py
+�   �   �   
+�   �   +---__pycache__
+�   �           token_obtener_api.cpython-313.pyc
+�   �           
+�   +---__pycache__
+�           decorators.cpython-313.pyc
+�           forms.cpython-313.pyc
+�           models.cpython-313.pyc
+�           __init__.cpython-313.pyc
+�  

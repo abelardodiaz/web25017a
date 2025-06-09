@@ -8,4 +8,3 @@ main_bp = Blueprint('main', __name__)
 def index():
     """Ruta principal de la aplicación"""
     return render_template('index.html')
-

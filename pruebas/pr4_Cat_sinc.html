@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sincronización de Catálogo | Syscom</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root[data-theme="light"] {
+            --bg-primary: #fff;
+            --text-primary: #1a1a1a;
+            --accent-color: #0d6efd;
+            --hover-bg: #f8f9fa;
+            --border-color: #dee2e6;
+            --bg-secondary: #ddd;
+        }
+
+        :root[data-theme="dark"]{
+            --bg-primary: #1a1a1a;
+            --text-primary: #fff;
+            --accent-color: #0d6efd;
+            --hover-bg: #2d2d2d;
+            --border-color: #444444;
+            --bg-secondary: #333;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .navbar {
+            background-color: var(--bg-primary) !important;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-link,
+        .navbar-brand {
+            color: var(--text-primary);
+        }
+
+        .nav-link:hover,
+        .nav-link:focus {
+            color: var(--accent-color);
+        }
+
+        .card {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .form-control,
+        .form-select {
+            background-color: var(--bg-primary); 
+            color: var(--text-primary); 
+            border: 1px solid var(--border-color); 
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background-color: var(--bg-primary); 
+            color: var(--text-primary); 
+            border-color: var(--accent-color); 
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25); 
+        }
+
+        .form-control::placeholder {
+            color: var(--text-primary);
+            opacity: 0.7; 
+        }
+
+        .table {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .table tbody tr {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: var(--hover-bg);
+            color: var(--text-primary);
+        }
+
+        .table thead th {
+            background-color: var(--hover-bg);
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .table th,
+        .table td {
+            border-color: var(--border-color);
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .footer {
+            background-color: var(--bg-secondary); 
+        }
+
+        .log-area {
+            height: 200px;
+            overflow-y: auto;
+            background-color: var(--bg-secondary);
+            border-radius: 5px;
+            padding: 10px;
+            font-family: monospace;
+        }
+
+        .log-success {
+            color: #28a745;
+        }
+
+        .log-error {
+            color: #dc3545;
+        }
+
+        .log-timestamp {
+            color: #6c757d;
+        }
+
+        .checkbox-cell {
+            width: 40px;
+        }
+
+        .product-img {
+            max-width: 60px;
+            max-height: 60px;
+            border-radius: 4px;
+            object-fit: cover;
+        }
+
+        .no-image {
+            width: 60px;
+            height: 60px;
+            background-color: var(--hover-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+
+        .btn-outline-light {
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .dropdown-menu {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .dropdown-item {
+            color: var(--text-primary);
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--hover-bg);
+            color: var(--accent-color);
+        }
+
+        .header-section {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .search-fields .col-md-3, 
+            .search-fields .col-md-2 {
+                margin-bottom: 10px;
+            }
+            
+            .card-header-actions {
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Barra de navegación -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">LogoApp</a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+                
+            <div class="collapse navbar-collapse" id="mainNav">
+                <!-- Menú principal -->
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Inicio</a>
+                    </li>
+                
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Panel</a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Syscom</a>
+                    </li>
+                </ul>
+        
+                <!-- Selector de temas y autenticación -->
+                <div class="d-flex align-items-center gap-2">
+                    <div class="dropdown">
+                        <button class="btn btn-secondary" id="themeDropdown">
+                            <i class="bi bi-moon-stars"></i>
+                        </button>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown">
+                            Admin Usuario
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#">Panel</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#">Cerrar Sesión</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <main class="container mt-4">
+        <!-- Encabezado -->
+        <div class="header-section">
+            <h1 class="mb-1">Sincronización de Catálogo</h1>
+            <p class="lead mb-1">Selecciona productos desde Syscom</p>
+            <p class="text-muted"><small>Vista exclusiva para administradores</small></p>
+        </div>
+
+        <!-- Campos de búsqueda -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form id="searchForm">
+                    <div class="row g-3 search-fields">
+                        <div class="col-md-4">
+                            <label for="keyword" class="form-label">Palabra Clave</label>
+                            <input type="text" class="form-control" id="keyword" placeholder="Buscar por modelo, título, etc.">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="ids" class="form-label">IDs de Productos</label>
+                            <input type="text" class="form-control" id="ids" placeholder="Separados por coma (123,456)">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="limit" class="form-label">Límite de Resultados</label>
+                            <input type="number" class="form-control" id="limit" value="20" min="1" max="100">
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-search me-2"></i>Buscar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Vista previa de productos -->
+        <div class="card mb-4">
+            <div class="card-header d-flex flex-wrap justify-content-between align-items-center">
+                <span>Vista Previa de Productos</span>
+                <div class="card-header-actions">
+                    <button id="selectAll" class="btn btn-sm btn-outline-secondary me-2">
+                        <i class="bi bi-check-all me-1"></i>Seleccionar Todo
+                    </button>
+                    <button id="deselectAll" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-x-lg me-1"></i>Deseleccionar Todo
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th class="checkbox-cell"><input type="checkbox" id="selectAllCheckbox"></th>
+                                <th>ID</th>
+                                <th>Modelo</th>
+                                <th>Título</th>
+                                <th>Marca</th>
+                                <th>Categoría</th>
+                                <th>Existencias</th>
+                                <th>Imagen</th>
+                            </tr>
+                        </thead>
+                        <tbody id="previewTableBody">
+                            <!-- Los productos se cargarán dinámicamente aquí -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botón de sincronización -->
+        <div class="d-flex justify-content-end mb-4">
+            <button id="syncButton" class="btn btn-success" disabled>
+                <i class="bi bi-arrow-repeat me-2"></i>Sincronizar Seleccionados
+            </button>
+        </div>
+
+        <!-- Área de logs -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Logs de Sincronización</span>
+                <button id="clearLogs" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-trash me-1"></i>Limpiar Logs
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="logArea" class="log-area">
+                    <!-- Los logs se mostrarán aquí -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div class="card mt-4">
+        <footer class="footer mt-auto py-3">
+            <div class="text-center">
+                &copy; 2025 redv6.com / esqueleto v0.1
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modal de confirmación -->
+    <div class="modal fade" id="confirmationModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar Sincronización</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de sincronizar los <span id="selectedCount">0</span> productos seleccionados?</p>
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>Esta acción puede tardar varios minutos.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="confirmSync">Sincronizar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Función para cambiar tema
+            function setTheme(theme) {
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+                
+                // Actualizar icono
+                const icon = document.querySelector('#themeDropdown i');
+                icon.className = theme === 'dark' ? 'bi bi-moon-stars' : 'bi bi-sun';
+            }
+            
+            // Cargar tema desde localStorage
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            setTheme(savedTheme);
+            
+            // Configurar el selector de temas
+            document.getElementById('themeDropdown').addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                setTheme(newTheme);
+            });
+            
+            // Datos de ejemplo para productos
+            const sampleProducts = [
+                { id: 12345, modelo: "MOD123", titulo: "Teclado Mecánico RGB", marca: "Logitech", categoria: "Periféricos", existencias: 15, imagen: true },
+                { id: 67890, modelo: "MOD456", titulo: "Monitor 24\" Full HD", marca: "Dell", categoria: "Monitores", existencias: 8, imagen: true },
+                { id: 24680, modelo: "MOD789", titulo: "Mouse Inalámbrico", marca: "Razer", categoria: "Periféricos", existencias: 22, imagen: false },
+                { id: 13579, modelo: "MOD012", titulo: "Disco SSD 1TB", marca: "Samsung", categoria: "Almacenamiento", existencias: 12, imagen: true },
+                { id: 11223, modelo: "MOD345", titulo: "Memoria RAM 16GB", marca: "Kingston", categoria: "Memoria", existencias: 18, imagen: true },
+                { id: 44556, modelo: "MOD678", titulo: "Tarjeta Gráfica RTX 3060", marca: "NVIDIA", categoria: "Componentes", existencias: 5, imagen: true },
+                { id: 77889, modelo: "MOD901", titulo: "Fuente de Poder 750W", marca: "Corsair", categoria: "Componentes", existencias: 7, imagen: false },
+                { id: 99001, modelo: "MOD234", titulo: "Auriculares Gaming", marca: "SteelSeries", categoria: "Audio", existencias: 14, imagen: true }
+            ];
+            
+            // Referencias a elementos DOM
+            const previewTableBody = document.getElementById('previewTableBody');
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+            const selectAllButton = document.getElementById('selectAll');
+            const deselectAllButton = document.getElementById('deselectAll');
+            const syncButton = document.getElementById('syncButton');
+            const logArea = document.getElementById('logArea');
+            const clearLogsButton = document.getElementById('clearLogs');
+            const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+            const selectedCountSpan = document.getElementById('selectedCount');
+            const confirmSyncButton = document.getElementById('confirmSync');
+            const searchForm = document.getElementById('searchForm');
+            
+            // Función para renderizar productos en la tabla
+            function renderProducts(products) {
+                previewTableBody.innerHTML = '';
+                
+                if (products.length === 0) {
+                    previewTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="8" class="text-center py-4">
+                                <i class="bi bi-search me-2"></i>No se encontraron productos. Prueba con otros criterios de búsqueda.
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                products.forEach(product => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="align-middle"><input type="checkbox" class="product-checkbox" data-id="${product.id}"></td>
+                        <td class="align-middle">${product.id}</td>
+                        <td class="align-middle">${product.modelo}</td>
+                        <td class="align-middle">${product.titulo}</td>
+                        <td class="align-middle">${product.marca}</td>
+                        <td class="align-middle">${product.categoria}</td>
+                        <td class="align-middle">${product.existencias}</td>
+                        <td class="align-middle">
+                            ${product.imagen 
+                                ? `<img src="https://via.placeholder.com/60x60?text=Imagen" alt="Producto" class="product-img">` 
+                                : `<div class="no-image"><i class="bi bi-image text-muted"></i></div>`}
+                        </td>
+                    `;
+                    previewTableBody.appendChild(row);
+                });
+                
+                // Habilitar botón de sincronización
+                syncButton.disabled = false;
+            }
+            
+            // Función para agregar un log
+            function addLog(message, isError = false) {
+                const now = new Date();
+                const timestamp = `[${now.toLocaleDateString()} ${now.toLocaleTimeString()}]`;
+                const logEntry = document.createElement('div');
+                logEntry.innerHTML = `
+                    <span class="log-timestamp">${timestamp}</span> 
+                    <span class="${isError ? 'log-error' : 'log-success'}">${message}</span>
+                `;
+                logArea.appendChild(logEntry);
+                logArea.scrollTop = logArea.scrollHeight;
+            }
+            
+            // Función para contar productos seleccionados
+            function countSelectedProducts() {
+                const selected = document.querySelectorAll('.product-checkbox:checked');
+                return selected.length;
+            }
+            
+            // Función para actualizar estado de selección
+            function updateSelectionState() {
+                const selectedCount = countSelectedProducts();
+                syncButton.disabled = selectedCount === 0;
+                
+                // Actualizar checkbox de selección global
+                const allProducts = document.querySelectorAll('.product-checkbox');
+                const allChecked = allProducts.length > 0 && selectedCount === allProducts.length;
+                selectAllCheckbox.checked = allChecked;
+                selectAllCheckbox.indeterminate = selectedCount > 0 && selectedCount < allProducts.length;
+            }
+            
+            // Event listeners
+            searchForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                renderProducts(sampleProducts);
+                addLog('Búsqueda realizada con éxito');
+            });
+            
+            selectAllCheckbox.addEventListener('change', () => {
+                const checkboxes = document.querySelectorAll('.product-checkbox');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = selectAllCheckbox.checked;
+                });
+                updateSelectionState();
+            });
+            
+            selectAllButton.addEventListener('click', () => {
+                const checkboxes = document.querySelectorAll('.product-checkbox');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = true;
+                });
+                updateSelectionState();
+            });
+            
+            deselectAllButton.addEventListener('click', () => {
+                const checkboxes = document.querySelectorAll('.product-checkbox');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                updateSelectionState();
+            });
+            
+            previewTableBody.addEventListener('change', (e) => {
+                if (e.target.classList.contains('product-checkbox')) {
+                    updateSelectionState();
+                }
+            });
+            
+            syncButton.addEventListener('click', () => {
+                const selectedCount = countSelectedProducts();
+                if (selectedCount > 0) {
+                    selectedCountSpan.textContent = selectedCount;
+                    confirmationModal.show();
+                }
+            });
+            
+            confirmSyncButton.addEventListener('click', () => {
+                confirmationModal.hide();
+                
+                // Simular proceso de sincronización
+                const selectedCheckboxes = document.querySelectorAll('.product-checkbox:checked');
+                addLog(`Iniciando sincronización de ${selectedCheckboxes.length} productos...`);
+                
+                // Simular progreso
+                let successCount = 0;
+                let errorCount = 0;
+                
+                selectedCheckboxes.forEach((checkbox, index) => {
+                    setTimeout(() => {
+                        const productId = checkbox.dataset.id;
+                        const isSuccess = Math.random() > 0.2; // 80% de éxito
+                        
+                        if (isSuccess) {
+                            addLog(`Producto ID ${productId} sincronizado correctamente`);
+                            successCount++;
+                        } else {
+                            addLog(`Error al sincronizar producto ID ${productId}`, true);
+                            errorCount++;
+                        }
+                        
+                        // Actualizar contadores al final
+                        if (index === selectedCheckboxes.length - 1) {
+                            addLog(`Sincronización completada: ${successCount} éxitos, ${errorCount} errores`);
+                        }
+                    }, index * 500);
+                });
+            });
+            
+            clearLogsButton.addEventListener('click', () => {
+                logArea.innerHTML = '';
+                addLog('Registros limpiados');
+            });
+            
+            // Cargar productos iniciales
+            renderProducts(sampleProducts);
+        });
+    </script>
+</body>
+</html>

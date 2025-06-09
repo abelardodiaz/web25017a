@@ -2,14 +2,24 @@
 from flask import Flask, session, current_app, request, redirect, url_for, get_flashed_messages
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
+from flask_login import LoginManager, current_user
+
+
+
+login_manager = LoginManager()
+login_manager.login_view = 'auth.login'  # Ruta a tu login
 
 db = SQLAlchemy()
 csrf = CSRFProtect()  # Inicializa CSRFProtect
 
 def create_app():
-    #app = Flask(__name__)
-    app = Flask(__name__, static_url_path='/111/static')
+    app = Flask(__name__)
     app.config.from_object('config.Config')  # Asegúrate de que config.Config tenga SECRET_KEY
+    login_manager.init_app(app)
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.get(int(user_id))
     
     # Inicializar extensiones
     db.init_app(app)
@@ -36,19 +46,23 @@ def create_app():
     def inject_theme():
         return dict(current_theme=app.config.get('DEFAULT_THEME', 'dark'))
     
-    @app.context_processor
-    def inject_user():
-        user = None
-        if 'user_id' in session:
-            user = User.query.get(session['user_id'])
-        return dict(current_user=user)
+    # Eliminar (ya lo hace Flask-Login)
+    # @app.context_processor
+    # def inject_user():
+    #     user = None
+    #     if 'user_id' in session:
+    #         user = User.query.get(session['user_id'])
+    #     return dict(current_user=user)
     
     # Registrar Blueprints (sin cambios aquí)
     from app.routes import main_routes, setup_routes, auth_routes, panel_routes
+    from app.routes.cat_routes import catalogo_bp
+    
     app.register_blueprint(main_routes.main_bp)
     app.register_blueprint(setup_routes.setup_bp)
     app.register_blueprint(auth_routes.auth_bp)
     app.register_blueprint(panel_routes.panel_bp)
+    app.register_blueprint(catalogo_bp)
     
     # Middleware de verificación de DB (sin cambios aquí)
     @app.before_request
@@ -58,3 +72,7 @@ def create_app():
                 return redirect(url_for('setup.setup'))
     
     return app
+
+    
+ 
+
