@@ -178,7 +178,9 @@ def sincronizar():
                 # Precios
                 precios = producto_data.get("precios", {})
                 producto.precio_lista = precios.get("precio_lista")
-                producto.precio_especial = precios.get("precio_especial")
+                # Tomamos el precio con descuento de Syscom como nuestro precio
+                # especial en la base de datos
+                producto.precio_especial = precios.get("precio_descuento")
 
                 # Recalcular precio público si no fue editado manualmente
                 if not producto.precio_editado:
